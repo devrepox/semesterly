@@ -21,8 +21,8 @@ npm-debug.log.*
 openssl.cnf
 parse_errors.log
 #parsing/**/data/courses.json
-parsing/**/logs/*.json
-parsing/**/logs/*.log
+#parsing/**/logs/*.json
+#parsing/**/logs/*.log
 *.pid
 prod_env/
 *.pyc
