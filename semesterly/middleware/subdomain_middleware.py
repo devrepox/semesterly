@@ -19,13 +19,13 @@ class SubdomainMiddleware(MiddlewareMixin):
         subdomain = self.get_subdomain(request)
 
         # Define domain suffixes for non-prod environments
-        nonprod_suffixes = ("-dev", "-test", "-stage", "-prod")
+        nonprod_suffixes = ("-dev", "-test", "-stage", "-prod", "-ly")
 
         request.subdomain = None
         if subdomain in ACTIVE_SCHOOLS:
             request.subdomain = subdomain
         elif subdomain.endswith(nonprod_suffixes):
-            request.subdomain = "jhu"
+            request.subdomain = "itcr"
 
     def get_subdomain(self, request):
         if "HTTP_X_ORIGINAL_HOST" in request.META:
