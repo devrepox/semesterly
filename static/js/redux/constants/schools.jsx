@@ -23,6 +23,7 @@ export const VALID_SCHOOLS = [
   "umich",
   "chapman",
   "salisbury",
+  "itcr",
 ];
 
 export const getSchoolSpecificInfo = (school) => {

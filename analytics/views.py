@@ -66,6 +66,9 @@ def view_analytics_dashboard(request):
                 "jhu_most_popular_courses": json.dumps(
                     most_popular_courses(n=5, school="jhu", Table=PersonalTimetable)
                 ),
+                "itcr_most_popular_courses": json.dumps(
+                    most_popular_courses(n=5, school="itcr", Table=PersonalTimetable)
+                ),
             },
         )
     else:
