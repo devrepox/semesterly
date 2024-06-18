@@ -20,13 +20,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
+import djcelery
+import dj_database_url
 import os
 import yaml
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 PROJECT_DIRECTORY = os.getcwd()
-PARSING_MODULE = "parsing"
+PARSING_MODULE = 'parsing'
 
 
 def get_secret(key):
@@ -39,246 +41,219 @@ def get_secret(key):
         return os.environ[key]
     except KeyError:
         try:
-            from .sensitive import SECRETS
-
+            from sensitive import SECRETS
             return SECRETS[key]
-        except (ModuleNotFoundError, KeyError):
+        except:
             try:
                 from .dev_credentials import SECRETS
-
                 return SECRETS[key]
-            except KeyError:
-                raise ValueError(
-                    """'%s' not correctly configured.
+            except:
+                raise ValueError("""'%s' not correctly configured.
                 Try adding it to the file semesterly/sensitive.py.
                 If this fails only on travis, make sure get_secret
                 is not called globally. Wrap the call within a closure
-                such as @classmethod def new(cls)."""
-                    % key
-                )
+                such as @classmethod def new(cls).""" % key)
 
+SECRET_KEY = get_secret('SECRET_KEY')
 
-SECRET_KEY = get_secret("SECRET_KEY")
+DEBUG = False
 
-DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
-SHOW_DEBUG_TOOLBAR = False
-
-ALLOWED_HOSTS = ["*"]
-
-USE_X_FORWARDED_HOST = True
+ALLOWED_HOSTS = ['*']
 
 SOCIAL_AUTH_FACEBOOK_SCOPE = [
-    "email",
-    "user_friends",
+    'email',
+#    'user_friends',
 ]
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {"fields": "id,name,email"}
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id,name,email'
+}
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-    "https://www.googleapis.com/auth/userinfo.profile",
-    # 'https://www.googleapis.com/auth/calendar'
+    # 'https://www.googleapis.com/auth/plus.login',
+    # 'https://www.googleapis.com/auth/plus.me',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/calendar'
 ]
 SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
-    "access_type": "offline",  # Enables the refreshing grant
-    "approval_promt": "force",  # Enables refresh_token
+    'access_type': 'offline',  # Enables the refreshing grant
+    'approval_promt': 'force'  # Enables refresh_token
 }
 
 # We always use SSL as FB requires it
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = True  # if (os.environ.get('HOSTING_ENV') == 'stage' or\
-#    os.environ.get('HOSTING_ENV') == 'prod') else False
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True #if (os.environ.get('HOSTING_ENV') == 'stage' or\
+                                     #    os.environ.get('HOSTING_ENV') == 'prod') else False
 
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = "/"
-SOCIAL_AUTH_LOGIN_ERROR_URL = "/"
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/'
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = get_secret("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = get_secret("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
-SOCIAL_AUTH_FACEBOOK_KEY = get_secret("SOCIAL_AUTH_FACEBOOK_KEY")
-SOCIAL_AUTH_FACEBOOK_SECRET = get_secret("SOCIAL_AUTH_FACEBOOK_SECRET")
-SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY = get_secret("SOCIAL_AUTH_AZURE_TENANT_KEY")
-SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET = get_secret("SOCIAL_AUTH_AZURE_TENANT_SECRET")
-SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID = get_secret("SOCIAL_AUTH_AZURE_TENANT_ID")
-STUDENT_SIS_AUTH_SECRET = get_secret("STUDENT_SIS_AUTH_SECRET")
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = get_secret('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = get_secret('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+SOCIAL_AUTH_FACEBOOK_KEY = get_secret('SOCIAL_AUTH_FACEBOOK_KEY')
+SOCIAL_AUTH_FACEBOOK_SECRET = get_secret('SOCIAL_AUTH_FACEBOOK_SECRET')
 
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
-    "social_core.backends.facebook.FacebookOAuth2",
-    "social_core.backends.google.GooglePlusAuth",
-    "social_core.backends.google.GoogleOAuth2",
-    "social_core.backends.azuread_tenant.AzureADTenantOAuth2",
+    'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.google.GooglePlusAuth',
+    'social_core.backends.google.GoogleOAuth2',
 )
-FIELDS_STORED_IN_SESSION = ["student_token", "login_hash"]
+FIELDS_STORED_IN_SESSION = ['student_token','login_hash']
 
 SOCIAL_AUTH_PIPELINE = (
     # Get the information we can about the user and return it in a simple
     # format to create the user instance later. On some cases the details are
     # already part of the auth response from the provider, but sometimes this
     # could hit a provider API.
-    "social_core.pipeline.social_auth.social_details",
+    'social_core.pipeline.social_auth.social_details',
+
     # Get the social uid from whichever service we're authing thru. The uid is
     # the unique identifier of the given user in the provider.
-    "social_core.pipeline.social_auth.social_uid",
+    'social_core.pipeline.social_auth.social_uid',
+
     # Verifies that the current auth process is valid within the current
     # project, this is where emails and domains whitelists are applied (if
     # defined).
-    "social_core.pipeline.social_auth.auth_allowed",
+    'social_core.pipeline.social_auth.auth_allowed',
+
     # Checks if the current social-account is already associated in the site.
-    "social_core.pipeline.social_auth.social_user",
+    'social_core.pipeline.social_auth.social_user',
+
     # Make up a username for this person, appends a random string at the end if
     # there's any collision.
-    "social_core.pipeline.user.get_username",
-    # Our method to associate the current social details with another user account
-    "authpipe.utils.associate_students",
+    'social_core.pipeline.user.get_username',
+
+    # Send a validation email to the user to verify its email address.
+    # Disabled by default.
+    # 'social_core.pipeline.mail.mail_validation',
+
+    # Associates the current social details with another user account with
+    # a similar email address. Disabled by default.
+    # 'social_core.pipeline.social_auth.associate_by_email',
+    'authpipe.utils.associate_students',
+
     # Create a user account if we haven't found one yet.
-    "social_core.pipeline.user.create_user",
+    'social_core.pipeline.user.create_user',
+
     # Create the record that associated the social account with this user.
-    "social_core.pipeline.social_auth.associate_user",
+    'social_core.pipeline.social_auth.associate_user',
+
     # Populate the extra_data field in the social record with the values
     # specified by settings (and the default ones like access_token, etc).
-    "social_core.pipeline.social_auth.load_extra_data",
+    'social_core.pipeline.social_auth.load_extra_data',
+
     # Update the user record with any changed info from the auth service.
-    "social_core.pipeline.user.user_details",
-    # Our method to initialize the new student object.
-    "authpipe.utils.create_student",
+    'social_core.pipeline.user.user_details',
+    'authpipe.utils.create_student',
 )
 
 # Webpack
 
 WEBPACK_LOADER = {
-    "DEFAULT": {
-        "BUNDLE_DIR_NAME": "bundles/",
-        "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     }
 }
 
 # Application definition
 
 INSTALLED_APPS = (
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "cachalot",
-    "django_extensions",
-    "drf_yasg",
-    "rest_framework",
-    "social_django",
-    "webpack_loader",
-    "agreement",
-    "analytics",
-    "authpipe",
-    "courses",
-    "notifications",
-    "parsing",
-    "scripts",
-    "searches",
-    "student",
-    "timetable",
-    "ckeditor",
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'storages',
+    'social_django',
+    'django_extensions',
+    'authpipe',
+    'timetable',
+    'exams',
+    'integrations',
+    'searches',
+    'courses',
+    'analytics',
+    'scripts',
+    'student',
+    'cachalot',
+    'rest_framework',
+    'rest_framework_swagger',
+    'webpack_loader',
+    'djcelery',
+    'agreement',
+    'parsing',
 )
 
-REST_FRAMEWORK = {"UNICODE_JSON": False}
+REST_FRAMEWORK ={
+    'UNICODE_JSON': False
+}
 
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 MIDDLEWARE = (
-    "semesterly.middleware.middleware.MultipleProxyMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "semesterly.middleware.subdomain_middleware.SubdomainMiddleware",
-    "social_django.middleware.SocialAuthExceptionMiddleware",
-    "rollbar.contrib.django.middleware.RollbarNotifierMiddleware",
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'semesterly.middleware.subdomain_middleware.SubdomainMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 )
-
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            os.path.join(PROJECT_DIRECTORY, "templates/"),
-            os.path.join(PROJECT_DIRECTORY, "semesterly/templates/"),
-        ],
-        "OPTIONS": {
-            "debug": DEBUG,
-            "context_processors": [
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-                "django.template.context_processors.request",
-                "django.template.context_processors.debug",
-                "django.template.context_processors.i18n",
-                "django.template.context_processors.media",
-                "django.template.context_processors.static",
-                "django.template.context_processors.tz",
-                "social_django.context_processors.backends",
-                "social_django.context_processors.login_redirect",
-            ],
-            "loaders": [
-                "django.template.loaders.filesystem.Loader",
-                "django.template.loaders.app_directories.Loader",
-            ],
-        },
-    }
-]
 
 AUTHENTICATION_BACKENDS = (
-    "social_core.backends.facebook.FacebookOAuth2",
-    "social_core.backends.google.GoogleOAuth2",
-    "social_core.backends.twitter.TwitterOAuth",
-    "social_core.backends.azuread_tenant.AzureADTenantOAuth2",
-    "django.contrib.auth.backends.ModelBackend",
+    'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.twitter.TwitterOAuth',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
-SESSION_COOKIE_SAMESITE = None
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 
-ROOT_URLCONF = "semesterly.urls"
+ROOT_URLCONF = 'semesterly.urls'
 
-WSGI_APPLICATION = "semesterly.wsgi.application"
+WSGI_APPLICATION = 'semesterly.wsgi.application'
 
-DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.path.join(
-            BASE_DIR, "db.postgresql"
-        ),  # os.path.join(BASE_DIR, 'db.postgresql')
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "localhost",
-        "PORT": "5432",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.path.join(BASE_DIR, 'db.postgresql'),  # os.path.join(BASE_DIR, 'db.postgresql')
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
 # Logging
-with open(os.path.join(os.path.dirname(__file__), "logging.yaml"), "r") as f:
-    LOGGING = yaml.safe_load(
-        f.read().format(
-            handlers_file_filename=os.path.join(
-                os.path.dirname(__file__), "logfile.log"
-            )
-        )
-    )
+with open(os.path.join(os.path.dirname(__file__), 'logging.yaml'), 'r') as f:
+    LOGGING = yaml.safe_load(f.read().format(
+        handlers_file_filename=os.path.join(os.path.dirname(__file__),
+                                            'logfile.log')
+    ))
 
 ADMINS = [
-    ("Rohan Das", "rohan@semester.ly"),
-    ("Felix Zhu", "felix@semester.ly"),
-    ("Noah Presler", "noah@semester.ly"),
-    ("Eric Calder", "eric@semester.ly"),
+    ('Rohan Das', 'rohan@semester.ly'),
+    ('Felix Zhu', 'felix@semester.ly'),
+    ('Noah Presler', 'noah@semester.ly'),
+    ('Eric Calder', 'eric@semester.ly'),
 ]
 
-STAGING_NOTIFIED_ADMINS = ["rohan@semester.ly", "noah@semester.ly"]
+STAGING_NOTIFIED_ADMINS = ['rohan@semester.ly', 'noah@semester.ly']
 
 EMAIL_USE_TLS = True
-EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 
-DEFAULT_FROM_EMAIL = "semesterly.logging@gmail.com"
+DEFAULT_FROM_EMAIL = 'semesterly.logging@gmail.com'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 SECURE_SSL_REDIRECT = True
@@ -286,9 +261,9 @@ SECURE_SSL_REDIRECT = True
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = "America/New_York"
+TIME_ZONE = 'EST'
 
 USE_I18N = True
 
@@ -298,82 +273,98 @@ USE_TZ = True
 
 APPEND_SLASH = True
 
-TEST_RUNNER = "helpers.test.test_runners.FastTestRunner"
+TEST_RUNNER = 'helpers.test.test_runners.FastTestRunner'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 
-STATICFILES_DIRS = [os.path.join(PROJECT_DIRECTORY, "static")]
+STATICFILES_DIRS = (
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(PROJECT_DIRECTORY,'static'),
 
-STATIC_ROOT = ""
+)
 
-CKEDITOR_CONFIGS = {
-    "default": {
-        "toolbar": "Custom",
-        "toolbar_Custom": [
-            ["Format", "Font", "FontSize", "TextColor"],
-            ["Bold", "Italic", "Underline"],
-            [
-                "NumberedList",
-                "BulletedList",
-                "-",
-                "Outdent",
-                "Indent",
-                "-",
-                "JustifyLeft",
-                "JustifyCenter",
-                "JustifyRight",
-                "JustifyBlock",
-            ],
-            ["Link", "Unlink"],
-            ["RemoveFormat", "Source"],
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE', 'django.core.files.storage.FileSystemStorage')
+STATICFILES_STORAGE = os.environ.get('STATICFILES_STORAGE', 'django.contrib.staticfiles.storage.StaticFilesStorage')
+
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', None)
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', None)
+AWS_IS_GZIPPED=True
+
+AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN', None)
+
+AWS_CLOUDFRONT_KEY = os.environ.get('AWS_CLOUDFRONT_KEY', None) if os.environ.get('AWS_CLOUDFRONT_KEY', None) is None else os.environ.get('AWS_CLOUDFRONT_KEY', None).encode('ascii')
+AWS_CLOUDFRONT_KEY_ID = os.environ.get('AWS_CLOUDFRONT_KEY_ID', None)
+
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(PROJECT_DIRECTORY,'templates/'),
+            os.path.join(PROJECT_DIRECTORY,'semesterly/templates/'),
         ],
-    }
-}
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
+            ],
+        },
+    },
+]
 
 # Caching
-# this is the default cache
 CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    'default': {
+        'BACKEND':'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION':'127.0.0.1:11211',
     }
 }
 CACHALOT_ENABLED = True
 
 try:
     from .local_settings import *
-except ModuleNotFoundError:
+except:
     pass
 
-if not DEBUG:
-    ROLLBAR = {
-        "access_token": "23c5a378cd1943cfb40d5217dfb7f766",
-        "environment": "development" if DEBUG else "production",
-        "root": BASE_DIR,
-    }
-    import rollbar
+# Begin Celery stuff.
+djcelery.setup_loader()
 
-    rollbar.init(**ROLLBAR)
+BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+CELERY_TIMEZONE = 'America/New_York'
 
-if SHOW_DEBUG_TOOLBAR:
-    DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda request: True}
-    INSTALLED_APPS += ("debug_toolbar",)
-    MIDDLEWARE += ("debug_toolbar.middleware.DebugToolbarMiddleware",)
-    DEBUG_TOOLBAR_PANELS = [
-        "debug_toolbar.panels.history.HistoryPanel",
-        "debug_toolbar.panels.versions.VersionsPanel",
-        "debug_toolbar.panels.timer.TimerPanel",
-        "debug_toolbar.panels.settings.SettingsPanel",
-        "debug_toolbar.panels.headers.HeadersPanel",
-        "debug_toolbar.panels.request.RequestPanel",
-        "debug_toolbar.panels.sql.SQLPanel",
-        "debug_toolbar.panels.staticfiles.StaticFilesPanel",
-        "debug_toolbar.panels.templates.TemplatesPanel",
-        "debug_toolbar.panels.cache.CachePanel",
-        "debug_toolbar.panels.signals.SignalsPanel",
-        "debug_toolbar.panels.redirects.RedirectsPanel",
-        "debug_toolbar.panels.profiling.ProfilingPanel",
-        "cachalot.panels.CachalotPanel",
-    ]
+# App instance to use
+CELERY_APP = "semesterly"
+
+# Where to chdir at start.
+CELERYBEAT_CHDIR = BASE_DIR
+CELERYD_CHDIR = BASE_DIR
+
+# # Can set up cron like scheduling here.
+# from celery.schedules import crontab
+# CELERYBEAT_SCHEDULE = {}
+
+# End Celery stuff.
+
+db_from_env = dj_database_url.config()
+DATABASES['default'].update(db_from_env)

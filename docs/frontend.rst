@@ -51,7 +51,7 @@ It is this JSON, called ``initData`` which we read into state as our initial sta
 
 Other actions required for page initialization are also dispatched from ``init.jsx`` including those which load cached timetables from the browser, alerts that show on page load, the loading of user's timetables if logged in, and the triggering of the user agreement modal when appropriate. 
 
-Finally, ``init.jsx`` renders ``<Semesterly />`` to the DOM. This is the root of the application.
+Finally, ``init.jsx`` renders ``<SemesterlyContainer />`` to the DOM. This is the root of the application.
 
 Actions
 ~~~~~~~~
@@ -82,6 +82,10 @@ The reducers directory follows this structure::
     ├── exploration_modal_reducer.jsx
     ├── final_exams_modal_reducer.jsx
     ├── friends_reducer.jsx
+    ├── integration_modal_reducer.jsx
+    ├── integrations_reducer.jsx
+    ├── notification_token_reducer.jsx
+    ├── optional_courses_reducer.jsx
     ├── peer_modal_reducer.jsx
     ├── preference_modal_reducer.jsx
     ├── preferences_reducer.jsx
@@ -94,6 +98,7 @@ The reducers directory follows this structure::
     ├── signup_modal_reducer.jsx
     ├── terms_of_service_banner_reducer.jsx
     ├── terms_of_service_modal_reducer.jsx
+    ├── textbook_modal_reducer.jsx
     ├── timetables_reducer.jsx
     ├── ui_reducer.jsx
     ├── user_acquisition_modal_reducer.jsx
@@ -122,27 +127,29 @@ Modals
 +-------------------------------+--------------------------------------------------+--------------------------+
 | Component File                | Screenshot                                       | Description              |
 +===============================+==================================================+==========================+
-|``CourseModalBody.tsx``        | .. image:: components/course_modal_body.png      |                          |
+|``course_modal_body.jsx``      | .. image:: components/course_modal_body.png      |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``CousreModal.tsx``            | .. image:: components/course_modal.png           |                          |
+|``course_modal.jsx``           | .. image:: components/course_modal.png           |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``AdvancedSearchModal.jsx``    | .. image:: components/exploration_modal.png      |                          |
+|``exploration_modal.jsx``      | .. image:: components/exploration_modal.png      |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 |``final_exams_modal.jsx``      | .. image:: components/final_exams_modal.png      |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``PeerModal.tsx``              | .. image:: components/peer_modal.png             |                          |
+|``peer_modal.jsx``             | .. image:: components/peer_modal.png             |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 |``preference_modal.jsx``       | .. image:: components/preference_modal.png       |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``SaveCalendarModal.tsx``      | .. image:: components/save_calendar_modal.png    |                          |
+|``save_calendar_modal.jsx``    | .. image:: components/save_calendar_modal.png    |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``SignupModal.tsx``            | .. image:: components/signup_modal.png           |                          |
+|``signup_modal.jsx``           | .. image:: components/signup_modal.png           |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``TutorialModal.tsx``          | .. image:: components/tut_modal.png              |                          |
+|``textbook_modal.jsx``         | .. image:: components/textbook_modal.png         |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``UserAquisitionModal.tsx``    | .. image:: components/user_acquisition_modal.png |                          |
+|``tut_modal.jsx``              | .. image:: components/tut_modal.png              |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``UserSettingsModal.tsx``      | .. image:: components/user_settings_modal.png    |                          |
+|``user_acquisition_modal.jsx`` | .. image:: components/user_acquisition_modal.png |                          |
++-------------------------------+--------------------------------------------------+--------------------------+
+|``user_settings_modal.jsx``    | .. image:: components/user_settings_modal.png    |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 
 General Components
@@ -152,53 +159,57 @@ General Components
 +===============================+==================================================+==========================+
 |``alert.jsx``                  | .. image:: components/alert.png                  |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``Calendar.tsx``               | .. image:: components/calendar.png               |                          |
+|``calendar.jsx``               | .. image:: components/calendar.png               |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``CourseModalSelection.tsx``   | .. image:: components/course_modal_section.png   |                          |
+|``calendar.jsx``               | .. image:: components/calendar.png               |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``CreditTicker.tsx``           | .. image:: components/credit_ticker.png          |                          |
+|``course_modal_section.jsx``   | .. image:: components/course_modal_section.png   |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``CustomSlot.tsx``             | .. image:: components/custom_slot.png            |                          |
+|``credit_ticker.jsx``          | .. image:: components/credit_ticker.png          |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``DayCalendar.tsx``            | .. image:: components/day_calendar.png           |                          |
+|``custom_slot.jsx``            | .. image:: components/custom_slot.png            |                          |
++-------------------------------+--------------------------------------------------+--------------------------+
+|``day_calendar.jsx``           | .. image:: components/day_calendar.png           |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 |``evaluation_list.jsx``        | .. image:: components/evaluation_list.png        |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 |``evaluation.jsx``             | .. image:: components/evaluation.png             |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``MasterSlot.tsx``             | .. image:: components/master_slot.png            |                          |
+|``master_slot.jsx``            | .. image:: components/master_slot.png            |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 |``pagination.jsx``             | .. image:: components/pagination.png             |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 |``reaction.jsx``               | .. image:: components/reaction.png               |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``SearchBar.tsx``              | .. image:: components/search_bar.png             |                          |
+|``search_bar.jsx``             | .. image:: components/search_bar.png             |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``SearchResult.tsx``           | .. image:: components/search_result.png          |                          |
+|``search_result.jsx``          | .. image:: components/search_result.png          |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 |``search_side_bar.jsx``        | .. image:: components/search_side_bar.png        |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``Semesterly.tsx``             | .. image:: components/semesterly.png             |                          |
+|``semesterly.jsx``             | .. image:: components/semesterly.png             |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``SideBar.jsx``                | .. image:: components/side_bar.png               |                          |
+|``side_bar.jsx``               | .. image:: components/side_bar.png               |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 |``side_scroller.jsx``          | .. image:: components/side_scroller.png          |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 |``slot_hover_tip.jsx``         | .. image:: components/slot_hover_tip.png         |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``SlotManager.tsx``            | .. image:: components/slot_manager.png           |                          |
+|``slot_manager.jsx``           | .. image:: components/slot_manager.png           |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``Slot.tsx``                   | .. image:: components/slot.png                   |                          |
+|``slot.jsx``                   | .. image:: components/slot.png                   |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 |``social_profile.jsx``         | .. image:: components/social_profile.png         |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
+|``sort_menu.jsx``              | .. image:: components/sort_menu.png              |                          |
++-------------------------------+--------------------------------------------------+--------------------------+
 |``terms_of_service_banner.jsx``| .. image:: components/terms_of_service_banner.png|                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-|``TermsOfServiceModal.tsx``    | .. image:: components/terms_of_service_modal.png |                          |
+|``terms_of_service_modal.jsx`` | .. image:: components/terms_of_service_modal.png |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
 | ``timetable_loader.jsx``      | .. image:: components/timetable_loader.png       |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-| ``TimetableNameInput.tsx``    | .. image:: components/timetable_name_input.png   |                          |
+| ``timetable_name_input.jsx``  | .. image:: components/timetable_name_input.png   |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+
-| ``TopBar.tsx``                | .. image:: components/top_bar.png                |                          |
+| ``top_bar.jsx``               | .. image:: components/top_bar.png                |                          |
 +-------------------------------+--------------------------------------------------+--------------------------+

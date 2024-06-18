@@ -12,18 +12,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
 
-import { connect } from "react-redux";
-import Calendar from "../Calendar";
-import { saveTimetable } from "../../actions/user_actions";
-import { handleCreateNewTimetable } from "../../actions/timetable_actions";
+import { connect } from 'react-redux';
+import Calendar from '../calendar';
+import { saveTimetable } from '../../actions/user_actions';
+import { handleCreateNewTimetable } from '../../actions/timetable_actions';
 import {
-  createICalFromTimetable,
-  fetchShareTimetableLink,
-  fetchSISTimetableData,
-} from "../../actions/calendar_actions";
-import { getMaxEndHour } from "../../state";
-import { saveCalendarModalActions } from "../../state/slices/saveCalendarModalSlice";
-import { preferencesActions } from "../../state/slices/preferencesSlice";
+    createICalFromTimetable,
+    fetchShareTimetableLink,
+    fetchSISTimetableData,
+} from '../../actions/calendar_actions';
+import { togglePreferenceModal, triggerSaveCalendarModal } from '../../actions/modal_actions';
+import { getMaxEndHour } from '../../reducers/root_reducer';
 
 const mapStateToProps = (state) => {
   const { isFetchingShareLink, shareLink, shareLinkValid } = state.calendar;
@@ -37,16 +36,20 @@ const mapStateToProps = (state) => {
     active: state.timetables.active,
     uses12HrTime: state.ui.uses12HrTime,
     registrarSupported: state.registrar.supported,
-    userInfo: state.userInfo.data,
   };
 };
 
-const CalendarContainer = connect(mapStateToProps, {
-  saveTimetable,
-  fetchShareTimetableLink,
-  triggerSaveCalendarModal: saveCalendarModalActions.triggerSaveCalendarModal,
-  createICalFromTimetable,
-  fetchSISTimetableData,
-})(Calendar);
+const CalendarContainer = connect(
+    mapStateToProps,
+  {
+    saveTimetable,
+    fetchShareTimetableLink,
+    togglePreferenceModal,
+    triggerSaveCalendarModal,
+    createICalFromTimetable,
+    handleCreateNewTimetable,
+    fetchSISTimetableData,
+  },
+)(Calendar);
 
 export default CalendarContainer;

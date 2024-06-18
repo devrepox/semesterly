@@ -29,10 +29,8 @@
 }
 
 .sem-page {
-  @include theme() {
-    background-color: t("course-section-bubble-background");
-    border: 5px solid t("course-section-bubble-border");
-  }
+  background-color: $gaaa;
+  border: 5px solid $gfff;
   border-radius: 50%;
   color: transparent;
   cursor: pointer;
@@ -56,17 +54,9 @@
   &.active {
     background-color: $primary-navy;
     border: 5px solid $primary-navy;
-    span.section-bubble {
-      @include theme() {
-        color: t("bubble-text-color");
-      }
-    }
+    color: $gfff;
   }
 
-  span.section-bubble {
-    color: transparent
-  }
-  
   span {
     left: 50%;
     position: absolute;

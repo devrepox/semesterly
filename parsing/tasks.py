@@ -21,19 +21,13 @@ from parsing.schools.active import ACTIVE_PARSING_SCHOOLS as ACTIVE_SCHOOLS
 
 logger = get_task_logger(__name__)
 
-
 @periodic_task(
     run_every=(crontab(hour=00, minute=00)),
     name="task_parse_current_registration_period",
-    ignore_result=True,
+    ignore_result=True
 )
-def task_parse_current_registration_period(schools=None):
-    """
-    Parse semesters in current registration period.
-
-    Args:
-        school (str, optional): School to parse.
-    """
+def task_parse_current_registration_period(schools=None, textbooks=False):
+    """Parse semesters in current registration period."""
     schools = set(schools or ACTIVE_SCHOOLS)
     for school in set(SCHOOLS_MAP) & schools:
         # Grab the most recent year.
@@ -51,65 +45,82 @@ def task_parse_current_registration_period(schools=None):
                     year: SCHOOLS_MAP[school].active_semesters[year][0]
                     for year in years
                 }
-                task_parse_school.delay(school, years_and_terms)
+                task_parse_school.delay(
+                    school,
+                    years_and_terms
+                )
                 continue
 
         # Create individual parsing tasks.
         for year, terms in years:
-            task_parse_school.delay(school, {year: [terms[0]]})
+            task_parse_school.delay(school, {year: [terms[0]]},
+                                    textbooks=textbooks)
 
 
 @task()
-def task_parse_active(schools=None):
-    """
-    Parse all semesters displayed to users (i.e. active semesters).
-
-    Args:
-        school (str, optional): School to parse.
-    """
+def task_parse_active(schools=None, textbooks=False):
+    """Parse all semesters displayed to users (i.e. active semesters)."""
     schools = set(schools or ACTIVE_SCHOOLS)
     for school in set(SCHOOLS_MAP) & schools:
         if SCHOOLS_MAP[school].singe_access:
-            task_parse_school.delay(school, SCHOOLS_MAP[school].active_semesters)
+            task_parse_school.delay(
+                school,
+                SCHOOLS_MAP[school].active_semesters
+            )
             continue
 
         for year, terms in list(SCHOOLS_MAP[school].active_semesters.items()):
             for term in terms:
-                task_parse_school.delay(school, {year: [term]})
+                task_parse_school.delay(school, {year: [term]},
+                                        textbooks=textbooks)
+
+
+@periodic_task(
+    run_every=(crontab(day_of_week='sun', hour=12, minute=00)),
+    name="task_parse_textbooks",
+    ignore_result=True
+)
+def task_parse_textbooks(schools=None, all=False):
+    """Parse textbooks for morst recent academic period.
+
+    Note that in some instances parsers parse textbooks
+    and courses at the same time.
+    """
+    if all:
+        return task_parse_active(schools, textbooks=True)
+    return task_parse_current_registration_period(schools, textbooks=True)
 
 
 @task()
-def task_parse_school(school, years_and_terms):
-    """
-    Call the django management commands to start parse.
+def task_parse_school(school, years_and_terms, textbooks=False):
+    """Call the django management commands to start parse.
 
     Args:
         school (str): School to parse.
         years_and_terms (dict): Years and terms dictionary.
+        textbooks (bool, optional): Flag to parse textbooks.
     """
-    logger.info("Starting parse for " + school + " " + str(years_and_terms))
-    filename = "{}/schools/{}/data/courses_{}.json".format(
+    logger.info('Starting parse for ' + school + ' ' + str(years_and_terms))
+    filename = '{}/schools/{}/data/courses_{}.json'.format(
         settings.PARSING_MODULE,
         school,
-        "-".join(
-            "{}{}".format(year, "".join(terms))
-            for year, terms in list(years_and_terms.items())
-        ),
+        '-'.join(
+            '{}{}'.format(
+                year,
+                ''.join(terms)
+            ) for year, terms in list(years_and_terms.items())
+        )
     )
 
-    management.call_command(
-        "ingest",
-        school,
-        years_and_terms=years_and_terms,
-        display_progress_bar=False,
-        verbosity=0,
-        output=filename,
-    )
-    management.call_command(
-        "digest",
-        school,
-        display_progress_bar=False,
-        verbosity=0,
-        data=filename,
-    )
-    logger.info("Finished parse for " + school + " " + str(years_and_terms))
+    management.call_command('ingest', school,
+                            years_and_terms=years_and_terms,
+                            textbooks=textbooks,
+                            display_progress_bar=False,
+                            verbosity=0,
+                            output=filename)
+    management.call_command('digest', school,
+                            textbooks=textbooks,
+                            display_progress_bar=False,
+                            verbosity=0,
+                            data=filename)
+    logger.info('Finished parse for ' + school + ' ' + str(years_and_terms))

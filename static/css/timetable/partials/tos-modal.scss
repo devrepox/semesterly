@@ -1,4 +1,5 @@
 .terms-of-service-modal {
+  max-width: 450px;
   text-align: center;
 
   h1 {
@@ -7,9 +8,7 @@
   }
 
   h3 {
-    @include theme() {
-      color: t("text-color-thin");
-    }
+    color: $g555;
     font-size: 14px;
     margin: 20px 10px;
   }
@@ -25,32 +24,23 @@
       margin-left: 3px;
     }
   }
+
 }
 
 .tos-modal-container {
   padding: 30px 20px;
 }
 
+
 .accept-tos-btn {
-  @include theme() {
-    background-color: t("confirm-button-background");
-  }
+  background-color: $green;
   border: 0;
   border-radius: 3px;
+  color: $gfff;
   margin: 20px auto;
   padding: 10px 20px;
 
-  span {
-    color: $gfff;
-  }
-
   i {
     margin-right: 10px;
-  }
-
-  &:hover {
-    @include theme() {
-      background-color: t("confirm-button-hover");
-    }
   }
 }

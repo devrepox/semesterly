@@ -1,4 +1,4 @@
-{% load static %}
+{% load staticfiles %}
 <!DOCTYPE html>
 
 <html lang="en">
@@ -7,8 +7,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 	{% block title_description_block %}{% endblock %}
-	<meta name="author" content="Noah Presler, Rohan Das, Felix Zhu, Max Yeo, Eric Calder, Sebastian Cabrejos">
-
+	<meta name="author" content="Stefano Gerli, Noah Presler, Rohan Das, Felix Zhu, Max Yeo, Eric Calder">
+	<meta property="og:image" content="{% static 'img/banner-horario-tec.jpg' %}" />
 	<!-- Facebook thumbnail info -->
 	{% block og_block %}{% endblock %}
 
@@ -17,44 +17,29 @@
 	<link href="https://fonts.googleapis.com/css?family=Palanquin:500|Roboto:100,300,400" rel="stylesheet"
 		type='text/css'>
 	<link rel="stylesheet" href="{% static 'css/global.css'%}">
-
-	<link rel="stylesheet"
-		href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/fontawesome.min.css"
-		integrity="sha384-wESLQ85D6gbsF459vf1CiZ2+rr+CsxRY0RpiF1tLlQpDnAgg6rwdsUF1+Ics2bni" crossorigin="anonymous">
-	<script src="https://kit.fontawesome.com/54815f8287.js" crossorigin="anonymous"></script>
-
 	{% block css_block %}{% endblock %}
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<script type="text/javascript" src="{% static 'js/splash.js'%}"></script>
-
-	<!-- Google Analytics script -->
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-SZDMY4X32Q"></script>
 	<script>
-		(function (i, s, o, g, r, a, m) {
-			i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-				(i[r].q = i[r].q || []).push(arguments)
-			}, i[r].l = 1 * new Date(); a = s.createElement(o),
-				m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
 
-		ga('create', 'UA-68704308-1', 'auto');
-		ga('send', 'pageview');
-
+		gtag('config', 'G-SZDMY4X32Q');
 	</script>
 </head>
 
 <body>
 	<header class="down">
 		<div class="grid cf">
-			<a href="/">
-				<h1><i class="fa fa-chevron-circle-left"></i>&nbsp;Back&nbsp;&nbsp;</h1>
-				<img id="semesterly-logo" src="/static/img/logo2.0-32x32.png">
-			</a>
-			<h1>Semester.ly</h1>
+			<img id="semesterly-logo" src="{% static 'img/logo2.0-32x32.png'%}">
+			<h1>HorarioTEC</h1>
 			<nav>
-				<!-- <a href="https://jhu.semester.ly">JHU</a> -->
+				<a href="https://jhu.semester.ly">JHU</a>
+				<a href="https://umd.semester.ly">UMD</a>
+				<a href="https://uoft.semester.ly">UofT</a>
 			</nav>
 		</div>
 	</header>
@@ -69,31 +54,18 @@
 							<i class="fa fa-facebook"></i>
 							<span>Like us on Facebook</span>
 						</a></li>
-					<li><a href="https://github.com/jhuopensource/semesterly/">
-							<i class="fa fa-github fa-lg"></i>
-							<span>Find us on GitHub</span>
-						</a></li>
-					<li><a href="https://discord.gg/txYbphsAV7">
-							<i class="fab fa-discord fa-lg"></i>
-							<span>Join the Community Forum</span>
-						</a></li>
-					<li><a href="mailto:semesterly@jhu.edu">
+					<li><a href="mailto:contact@semester.ly">
 							<i class="fa fa-at"></i>
-							<span>Email us at semesterly@jhu.edu</span>
-						</a></li>
-					<li><a href="https://semester.ly/termsofservice" target="_blank">
-							<i class="fa fa-bookmark"></i>
-							<span>Read our Terms of Service</span>
-						</a></li>
-					<li><a href="https://semester.ly/privacypolicy" target="_blank">
-							<i class="fa fa-lock"></i>
-							<span>Read our Privacy Policy</span>
+							<span>Email us at contact@semester.ly</span>
 						</a></li>
 				</ul>
 			</div>
-			<h6>COPYRIGHT © 2017 SEMESTERLY TECHNOLOGIES, LLC.</h6>
+			<h6>COPYRIGHT © 2016 SEMESTERLY TECHNOLOGIES, LLC.</h6>
 		</div>
 	</footer>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script type="text/javascript" src="{% static 'js/splash.js'%}"></script>
 </body>
 
 </html>

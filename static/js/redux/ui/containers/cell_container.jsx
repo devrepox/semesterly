@@ -12,31 +12,21 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
 
-import { connect } from "react-redux";
-import Cell from "../calendar_cell";
-import {
-  addCustomSlot,
-  updateCustomSlot,
-  finalizeCustomSlot,
-} from "../../actions/timetable_actions";
-import {
-  addSearchSlot,
-  updateSearchSlot,
-  finalizeSearchSlot,
-} from "../../actions/dragSearchActions";
-import { getMaxEndHour } from "../../state";
+import { connect } from 'react-redux';
+import Cell from '../calendar_cell';
+import { addCustomSlot, updateCustomSlot } from '../../actions/timetable_actions';
+import { getMaxEndHour } from '../../reducers/root_reducer';
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   endHour: getMaxEndHour(state),
 });
 
-const CellContainer = connect(mapStateToProps, {
-  addCustomSlot,
-  updateCustomSlot,
-  finalizeCustomSlot,
-  addSearchSlot,
-  updateSearchSlot,
-  finalizeSearchSlot,
-})(Cell);
+const CellContainer = connect(
+    mapStateToProps,
+  {
+    addCustomSlot,
+    updateCustomSlot,
+  },
+)(Cell);
 
 export default CellContainer;

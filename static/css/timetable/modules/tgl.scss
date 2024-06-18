@@ -220,15 +220,11 @@
     }
 
     &::before {
-      @include theme() {
-        background: t("switch-slide-before")
-      }
+      background: #eceeef;
     }
 
     &::after {
-      @include theme() {
-        background: t("switch-slide-after")
-      }
+      background: #87CEEB;
       color: $gfff;
       left: -100px;
     }

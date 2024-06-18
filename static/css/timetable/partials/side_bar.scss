@@ -12,28 +12,23 @@
 
 .side-bar {
   input {
-    @include theme() {
-      border: t("sidebar-input-border");
-      background-color: t("sidebar-input-background");
-
-      &:focus {
-        border: t("sidebar-input-border_focus");
-      }
-
-      &:hover {
-        border: t("sidebar-input-border_hover");
-      }
-    }
-
-    border-radius: 25px;
+    border: 1px solid $gfff;
     font-family: $font-body;
     font-size: 18px;
     font-weight: 700;
     line-height: 25px;
     outline: 0;
-    padding: 5px 5px 5px 15px;
-    transition: border 0.3s;
+    padding: 5px;
+    transition: border .3s;
     width: 100%;
+
+    &:focus {
+      border: 1px solid $blue-alt;
+    }
+
+    &:hover {
+      border: 1px solid $gddd;
+    }
   }
 
   .unsaved {
@@ -87,27 +82,21 @@
 }
 
 .timetable-names-dropdown {
-  @include theme() {
-    background-color: t("dropdown-background");
-    border: t("dropdown-border");
-  }
+  background-color: $gfff;
+  border: 1px solid $ge6e6e6;
   box-shadow: 0 2px 10px $black-transparent-2;
   display: none;
   left: 0;
   position: absolute;
   top: 35px;
   width: 100%;
-  z-index: 10;
+  z-index: 100;
 
   &.down {
     display: block;
   }
 
   .tip {
-    @include theme() {
-      // tip color
-      border-bottom-color: t("dropdown-background");
-    }
     right: 9px;
     top: -7px;
   }
@@ -126,10 +115,15 @@
 }
 
 .tt-name {
+  background-color: $gfff;
   cursor: pointer;
   font-size: 12px;
   padding: 5px 5px 5px 20px;
-  transition: background-color 0.3s;
+  transition: background-color .3s;
+
+  :hover {
+    background-color: $geee;
+  }
 }
 
 .sb-header {
@@ -155,12 +149,10 @@
 
 .sb-header-link {
   float: right;
-  transition: color 0.3s;
+  transition: color .3s;
 
   &:hover {
-    @include theme() {
-      color: t("text-color-hover");
-    }
+    color: $primary-navy;
     cursor: pointer;
   }
 }
@@ -184,9 +176,7 @@
 
 .sb-rating {
   h3 {
-    @include theme() {
-      color: t("text-color");
-    }
+    color: $g777;
     font-size: 12px;
     font-weight: 200;
     margin: 0;
@@ -194,19 +184,17 @@
   }
 
   .sub-rating-wrapper {
-    display: flex;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 50%;
+    transform: translateX(-50%);
   }
 }
 
 .sb-credits {
   margin-bottom: 10px;
+  text-align: center;
 
   h3 {
-    @include theme() {
-      color: t("text-color");
-    }
+    color: $primary-navy;
     font-size: 30px;
     font-weight: 300;
     line-height: 36px;
@@ -214,9 +202,7 @@
   }
 
   h4 {
-    @include theme() {
-      color: t("text-color");
-    }
+    color: $g999;
     font-size: 14px;
     font-weight: 300;
     line-height: 14px;
@@ -237,7 +223,11 @@
   margin-bottom: 5px;
   padding: 5px 5px 5px 10px;
   position: relative;
-  transition: color 0.3s, background-color 0.3s;
+  transition: color .3s, background-color .3s;
+
+  &.optional {
+    opacity: .5;
+  }
 
   .slot-bar {
     background-color: $red-dark;
@@ -245,11 +235,6 @@
     top: 0;
   }
 
-  div {
-    span {
-      color: black;
-    }
-  }
 }
 
 .modal-module {
@@ -268,17 +253,6 @@
     .tip-border {
       right: 0;
       top: -7px;
-    }
-  }
-}
-
-.compare-tt {
-  div {
-    h3,
-    span {
-      @include theme() {
-        color: t("compare-timetable-slot");
-      }
     }
   }
 }
@@ -329,12 +303,12 @@
     display: inline-block;
     line-height: 15px;
     margin-left: 5px;
-    opacity: 0.5;
-    transition: transform 0.3s, opacity 0.3s;
+    opacity: .5;
+    transition: transform .3s, opacity .3s;
     vertical-align: top;
 
     &:hover {
-      opacity: 0.9;
+      opacity: .9;
       transform: scale(1.2);
     }
   }
@@ -365,7 +339,7 @@
 
   &:first-child {
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color .3s;
 
     &:hover {
       background-color: $black-transparent-5;
@@ -373,10 +347,17 @@
   }
 }
 
-.create-new-timetable {
-  margin: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+.final-schedule-link {
+  clear: both;
+  color: $g777;
+  font-size: 14px;
+  font-weight: 200;
+  margin: 0;
+  padding: 10px 5px;
+  position: relative;
+  text-align: center;
+
+  i {
+    margin-right: 3px;
+  }
 }

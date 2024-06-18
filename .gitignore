@@ -10,8 +10,6 @@ docs/build/
 .DS_Store
 env/
 github-request-body
-.history
-htmlcov/
 .idea/
 *.log
 *.log
@@ -20,9 +18,9 @@ node_modules
 npm-debug.log.*
 openssl.cnf
 parse_errors.log
-#parsing/**/data/courses.json
-#parsing/**/logs/*.json
-#parsing/**/logs/*.log
+parsing/**/data/*.json
+parsing/**/logs/*.json
+parsing/**/logs/*.log
 *.pid
 prod_env/
 *.pyc
@@ -32,6 +30,7 @@ scripts/parser_library/ex_school/data/*
 sections
 semes/
 semesterly_backup/
+semesterly/local_settings.py
 semesterly/secret_key.py
 semesterly/secrets.py
 semesterly/sensitive.py
@@ -46,6 +45,7 @@ static/robots.txt
 static/sitemap.txt
 *.swp
 */test_failures/
+TextbookParserOutput.txt
 timetable/courses_json/*.json
 *.timetable.features
 timetable.features
@@ -57,3 +57,7 @@ webpack-stats.json
 workfile.html
 cache
 stunnel/
+staticfiles
+
+*.env
+.devcontainer/

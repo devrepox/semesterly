@@ -1,20 +1,18 @@
 .user-acquisition-modal {
+  height: 495px;
+  max-width: 450px;
+  overflow: auto;
+
   .user-acquisition-modal__container {
     padding: 30px;
-  }
-
-  .h6 {
-    background-color: transparent;
   }
 }
 
 .abnb-btn {
   &.fb-btn {
-    span {
-      color: $gfff;
-    }
     background-color: $facebook;
     border-color: $facebook;
+    color: $gfff;
   }
 }
 
@@ -26,9 +24,7 @@
 
 .abnb-modal {
   h3 {
-    @include theme() {
-      color: t("text-color-thin");
-    }
+    color: $g484848;
     font-size: 17px;
     font-weight: 300;
     margin-top: 0;
@@ -39,6 +35,6 @@
 
 .abnb-btn.disabled,
 .abnb-btn[disabled],
-fieldset[disabled] .abnb-btn {
-  opacity: 0.25;
+fieldset[disabled] .abnb-btn{
+  opacity: .25;
 }

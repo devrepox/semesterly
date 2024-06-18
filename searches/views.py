@@ -13,6 +13,7 @@
 import operator
 
 from django.core.paginator import Paginator, EmptyPage
+from django.apps import apps
 from django.db.models import Q
 
 from rest_framework import status
@@ -20,133 +21,95 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from analytics.views import save_analytics_course_search
-from courses.serializers import CourseSerializer, CourseSearchSerializer
-from searches.utils import search
+from courses.serializers import CourseSerializer
+from searches.utils import baseline_search
+from student.models import Student
 from student.utils import get_student
 from timetable.models import Semester
 from helpers.mixins import ValidateSubdomainMixin, CsrfExemptMixin
-from functools import reduce
+from functools import reduce, cmp_to_key
 
 
 class CourseSearchList(CsrfExemptMixin, ValidateSubdomainMixin, APIView):
     """Course Search List."""
-
     def get(self, request, query, sem_name, year):
-        """Return search results."""
+        """ Return vectorized search results. """
         school = request.subdomain
         sem = Semester.objects.get_or_create(name=sem_name, year=year)[0]
+        # TODO: use vectorized search after completion.
+        # Use vectorized_search if and only if a valid Searcher object is created, otherwise use baseline_search
+        # if apps.get_app_config('searches').searcher:
+        #     course_match_objs = apps.get_app_config('searches').searcher.vectorized_search(request.subdomain, query, sem)[:4]
+        # else:
+        #     course_match_objs = baseline_search(request.subdomain, query, sem)[:4]
 
-        course_matches = search(request.subdomain, query, sem)
-
-        courses_per_page = int(request.GET.get("limit", 10))
-        paginator = Paginator(course_matches, courses_per_page)
-
-        cur_page = int(request.GET.get("page", 1))
-
-        try:
-            paginated_data = paginator.page(cur_page)
-        except EmptyPage:
-            return Response({"data": [], "page": cur_page}, status=status.HTTP_200_OK)
-
-        course_match_data = CourseSearchSerializer(
-            paginated_data, context={"semester": sem, "school": school}, many=True
-        ).data
-        self.save_analytic(request, query, course_matches, sem)
-        return Response(
-            {"data": course_match_data, "page": cur_page}, status=status.HTTP_200_OK
-        )
-
-    def save_analytic(self, request, query, course_matches, sem, advanced=False):
-        save_analytics_course_search(
-            query[:200],
-            course_matches[:2],
-            sem,
-            request.subdomain,
-            get_student(request),
-            advanced,
-        )
+        # sorts queries by course number through a comparator
+        def course_comparator(course1, course2):
+            #isolate course number from XX0000
+            c1=int(str(course1)[2:6])
+            c2=int(str(course2)[2:6])
+            if c1 < c2:
+                return -1
+            elif c1 > c2:
+                return 1
+            else:
+                return 0
+        course_match_objs = baseline_search(request.subdomain, query, sem).distinct()
+        #only sort if results is less than 100 for efficiency sake
+        if len(course_match_objs) < 100:
+            course_match_objs = sorted(course_match_objs, key=cmp_to_key(course_comparator))
+        #display only 12 courses to avoid displaying too many.
+        course_match_objs = course_match_objs[:12]
+        save_analytics_course_search(query[:200], course_match_objs[:2], sem, request.subdomain,
+                                     get_student(request))
+        course_matches = [CourseSerializer(course, context={'semester': sem, 'school': school}).data
+                          for course in course_match_objs]
+        return Response(course_matches, status=status.HTTP_200_OK)
 
     def post(self, request, query, sem_name, year):
-        """Return advanced search results."""
+        """ Return advanced search results. """
         school = request.subdomain
+        page = int(request.query_params.get('page', 1))
         sem, _ = Semester.objects.get_or_create(name=sem_name, year=year)
-        filters = request.data.get("filters", {})
-        course_matches = search(school, query, sem)
-        course_matches = self.filter_course_matches(course_matches, filters, sem)
-        course_matches = course_matches[:100]  # prevent timeout
-        self.save_analytic(request, query, course_matches, sem, True)
-        student = get_student(request)
-        serializer_context = {
-            "semester": sem,
-            "student": student,
-            "school": request.subdomain,
-        }
+        # Filter first by the user's search query.
+        # TODO : use vectorized search (change returned obj to be filterable)
+        course_match_objs = baseline_search(school, query, sem)
 
-        cur_page = int(request.GET.get("page", 1))
-        courses_per_page = int(request.GET.get("limit", 10))
-        paginator = Paginator(course_matches, courses_per_page)
-
-        if cur_page > paginator.num_pages:
-            course_match_data = []
-        else:
-            paginated_data = paginator.page(cur_page)
-            course_match_data = CourseSerializer(
-                paginated_data, context=serializer_context, many=True
-            ).data
-
-        return Response(
-            {"data": course_match_data, "page": cur_page}, status=status.HTTP_200_OK
-        )
-
-    def filter_course_matches(self, course_matches, filters, sem):
-        course_matches = self.filter_by_areas(course_matches, filters)
-        course_matches = self.filter_by_departments(course_matches, filters)
-        course_matches = self.filter_by_levels(course_matches, filters)
-        course_matches = self.filter_by_times(sem, course_matches, filters)
-        course_matches = course_matches.order_by("id")
-        return course_matches
-
-    def filter_by_areas(self, course_matches, filters):
-        if filters.get("areas"):
-            course_matches = course_matches.filter(areas__contains=filters.get("areas"))
-        return course_matches
-
-    def filter_by_departments(self, course_matches, filters):
-        if filters.get("departments"):
-            course_matches = course_matches.filter(
-                department__in=filters.get("departments")
+        # Filter now by departments, areas, levels, or times if provided.
+        filters = request.data.get('filters', {})
+        if filters.get('areas'):
+            course_match_objs = course_match_objs.filter(areas__in=filters.get('areas'))
+        if filters.get('departments'):
+            course_match_objs = course_match_objs.filter(department__in=filters.get('departments'))
+        if filters.get('levels'):
+            course_match_objs = course_match_objs.filter(level__in=filters.get('levels'))
+        if filters.get('times'):
+            day_map = {"Monday": "M", "Tuesday": "T", "Wednesday": "W", "Thursday": "R",
+                       "Friday": "F", "Saturday": "S", "Sunday": "U"}
+            course_match_objs = course_match_objs.filter(
+                reduce(operator.or_,
+                       (Q(section__offering__time_start__gte="{0:0=2d}:00".format(min_max['min']),
+                          section__offering__time_end__lte="{0:0=2d}:00".format(min_max['max']),
+                          section__offering__day=day_map[min_max['day']],
+                          section__semester=sem,
+                          section__section_type="L") for min_max in filters.get('times'))
+                       )
             )
-        return course_matches
+        try:
+            paginator = Paginator(course_match_objs.distinct(), 20)
+            course_match_objs = paginator.page(page)
+        except EmptyPage:
+            return Response([])
 
-    def filter_by_levels(self, course_matches, filters):
-        if filters.get("levels"):
-            course_matches = course_matches.filter(level__in=filters.get("levels"))
-        return course_matches
+        save_analytics_course_search(query[:200], course_match_objs[:2], sem, school,
+                                     get_student(request),
+                                     advanced=True)
+        student = None
+        logged = request.user.is_authenticated
+        if logged and Student.objects.filter(user=request.user).exists():
+            student = Student.objects.get(user=request.user)
+        serializer_context = {'semester': sem, 'student': student, 'school': request.subdomain}
+        json_data = [CourseSerializer(course, context=serializer_context).data
+                     for course in course_match_objs]
 
-    def filter_by_times(self, sem, course_matches, filters):
-        if filters.get("times"):
-            day_map = {
-                "Monday": "M",
-                "Tuesday": "T",
-                "Wednesday": "W",
-                "Thursday": "R",
-                "Friday": "F",
-                "Saturday": "S",
-                "Sunday": "U",
-            }
-            course_matches = course_matches.filter(
-                reduce(
-                    operator.or_,
-                    (
-                        Q(
-                            section__offering__time_start__gte=min_max["min"],
-                            section__offering__time_end__lte=min_max["max"],
-                            section__offering__day=day_map[min_max["day"]],
-                            section__semester=sem,
-                            section__section_type="L",
-                        )
-                        for min_max in filters.get("times")
-                    ),
-                )
-            )
-        return course_matches
+        return Response(json_data, status=status.HTTP_200_OK)

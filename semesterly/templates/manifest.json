@@ -1,5 +1,5 @@
 {  
-    "name": "Semester.ly",  
+    "name": "HorarioTEC",  
     "icons": [{  
         "310": "static/img/logo2.0-310x310.png"
     }],  
@@ -7,7 +7,8 @@
     "display": "standalone",  
     "permissions": [
         "gcm",
-        "storage"
+        "storage",
+        "notifications"
     ],
     "gcm_sender_id": "801736825762"
 }

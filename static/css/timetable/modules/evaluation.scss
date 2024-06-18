@@ -1,13 +1,11 @@
 .modal-entry {
   .eval-item {
-    @include theme() {
-      background-color: t("evaluation-background");
-      border: 1px solid t("modal-border-color");
-    }
+    background-color: $gfff;
+    border: 1px solid $gd4d4d4;
     display: inline-block;
     margin: 3px;
     text-align: center;
-    transition: width 0.3s;
+    transition: width .3s;
   }
 }
 
@@ -38,9 +36,7 @@
 
 .nav-item-active {
   .eval-item {
-    @include theme() {
-      border: 1px solid t("toolbar-icon-hover");
-    }
+    border: 1px solid $primary-navy;
   }
 }
 
@@ -132,7 +128,7 @@
   width: 90px;
 }
 
-.col-4-16 {
+.col-3-16 {
   .star-ratings-sprite {
     margin-left: 50%;
     transform: translateX(-50%);

@@ -11,36 +11,84 @@
 # GNU General Public License for more details.
 
 from rest_framework import status
-from rest_framework.test import APITestCase, APIRequestFactory
+from rest_framework.test import APITestCase
+
+from student.models import RegistrationToken
 from helpers.test.test_cases import UrlTestCase
-from helpers.test.utils import (
-    create_user,
-    create_student,
-    get_response,
-    get_auth_response,
-)
 
 
 class UrlsTest(UrlTestCase):
-    """Test student/urls.py"""
+    """ Test student/urls.py """
 
     def test_urls_call_correct_views(self):
-        # facebook login
+        # auth
         self.assertUrlResolvesToView(
-            "/login/facebook/", "social:begin", kwargs={"backend": "facebook"}
-        )
+            '/login/facebook/',
+            'social:begin',
+            kwargs={
+                'backend': 'facebook'})
         self.assertUrlResolvesToView(
-            "/complete/facebook/", "social:complete", kwargs={"backend": "facebook"}
-        )
+            '/complete/facebook/',
+            'social:complete',
+            kwargs={
+                'backend': 'facebook'})
 
-        # jhed login
+        # registration
         self.assertUrlResolvesToView(
-            "/login/azuread-tenant-oauth2/",
-            "social:begin",
-            kwargs={"backend": "azuread-tenant-oauth2"},
-        )
-        self.assertUrlResolvesToView(
-            "/complete/azuread-tenant-oauth2/",
-            "social:complete",
-            kwargs={"backend": "azuread-tenant-oauth2"},
-        )
+            '/registration-token/',
+            'authpipe.views.RegistrationTokenView')
+        self.assertUrlResolvesToView('/registration-token/google/', 'authpipe.views.RegistrationTokenView',
+                                     kwargs={'endpoint': 'google'})
+
+
+class TestToken(APITestCase):
+    """ Test setting and deleting tokens """
+    school = 'uoft'
+    request_headers = {
+        'HTTP_HOST': '{}.sem.ly:8000'.format(school)
+    }
+
+    def test_create_token(self):
+        """ Test creating a new token. """
+        my_token = {
+            'auth': 'someauth',
+            'p256dh': 'something',
+            'endpoint': 'some endpoint'
+        }
+
+        response = self.client.put(
+            '/registration-token/',
+            data=my_token,
+            format='json',
+            **self.request_headers)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertDictContainsSubset(my_token, response.json())
+        self.assertIsNotNone(
+            RegistrationToken.objects.get(
+                endpoint='some endpoint'))
+
+    def test_create_token_student(self):
+        """ Test creating a new token when logged in. """
+        pass
+
+    def test_set_token(self):
+        """ Test updating an existing token. """
+        pass
+
+    def test_delete_token_exists(self):
+        """ Test deleting an existing token. """
+        token = RegistrationToken.objects.create(
+            auth='a', p256dh='p', endpoint='e')
+        response = self.client.delete(
+            '/registration-token/{}/'.format(token.endpoint), **self.request_headers)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(
+            RegistrationToken.objects.filter(
+                endpoint=token.endpoint).exists())
+
+    def test_delete_token_not_exists(self):
+        """ Test deleting a non existent token. """
+        response = self.client.delete(
+            '/registration-token/bla/',
+            **self.request_headers)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

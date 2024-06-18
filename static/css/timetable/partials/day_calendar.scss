@@ -15,6 +15,7 @@
     float: left;
     font-size: 12px;
     line-height: 20px;
+    width: 20%;
   }
 
   .day-pills__wrapper {
@@ -38,8 +39,13 @@
     width: 100%;
   }
 
+  #nudgespotInappContainer { // sass-lint:disable-line id-name-format
+    display: none;
+  }
+
   .calendar {
     .fc-toolbar {
+      background-color: $gf9f9f9;
       border-bottom: 0;
       border-color: transparent;
       margin-top: 0;
@@ -52,7 +58,7 @@
     border: 0;
   }
 
-  .fc .fc-toolbar > * > :first-child {
+  .fc .fc-toolbar>*>:first-child {
     margin-left: 8px;
   }
 
@@ -77,6 +83,12 @@
       width: 5px;
     }
   }
+
+  .sem-pages {
+    .sem-page {
+      border: 5px solid $gf9f9f9;
+    }
+  }
 }
 
 .calendar {
@@ -90,7 +102,7 @@
       position: fixed;
       top: 20px;
       width: 100%;
-      z-index: 10;
+      z-index: 100;
     }
   }
 
@@ -111,7 +123,7 @@
       height: 10px;
       position: absolute;
       width: 10px;
-      z-index: 10;
+      z-index: 1000;
     }
   }
 }

@@ -1,8 +1,6 @@
 .tos-banner {
-  @include theme() {
-    background-color: t("tos-banner-background");
-    border: 1px solid t("tos-banner-border");
-  }
+  background-color: $gfff;
+  border: 1px solid $gddd;
   bottom: 0;
   left: 50%;
   max-width: 470px;
@@ -11,10 +9,10 @@
   position: fixed;
   text-align: center;
   transform: translateX(-50%);
-  transition: opacity 0.3s, visibility 0.3s;
+  transition: opacity .3s, visibility .3s;
   visibility: hidden;
   width: 100%;
-  z-index: 30;
+  z-index: 3000;
 
   p {
     font-size: 12px;
@@ -33,9 +31,7 @@
 }
 
 .tos-banner__close {
-  @include theme() {
-    background-color: t("tos-banner-close");
-  }
+  background-color: $geee;
   bottom: 6px;
   cursor: pointer;
   padding: 0 5px;
@@ -47,7 +43,7 @@
     color: $g555;
     font-size: 15px;
     line-height: 32px;
-    transition: color 0.3s;
+    transition: color .3s;
   }
 
   &:hover {

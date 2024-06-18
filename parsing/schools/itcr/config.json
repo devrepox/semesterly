@@ -1,7 +1,7 @@
 {
   "school": {
     "code": "itcr",
-    "name": "Tecnologico de Costa Rica"
+    "name": "Instituto Tecnológico de Costa Rica"
   },
   "course_code_regex": "([A-Z]{2}\\d{4})$",
   "terms": [
@@ -15,8 +15,11 @@
   "single_access": false,
   "active_semesters": {
     "2024": [
-      "1"
+      "1",
+      "2",
+      "V"
     ]
+    
   },
   "registrar": false
 }

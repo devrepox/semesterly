@@ -12,26 +12,39 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
 
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 export const semester = PropTypes.shape({
   name: PropTypes.string.isRequired,
   year: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 });
 
-export const classmatesArray = PropTypes.arrayOf(
-  PropTypes.shape({
-    first_name: PropTypes.string,
-    last_name: PropTypes.string,
-    img_url: PropTypes.string,
-    sections: PropTypes.arrayOf(PropTypes.string), // section codes
-  })
-);
+export const classmatesArray = PropTypes.arrayOf(PropTypes.shape({
+  first_name: PropTypes.string,
+  last_name: PropTypes.string,
+  img_url: PropTypes.string,
+  sections: PropTypes.arrayOf(PropTypes.string), // section codes
+}));
 
 export const classmates = PropTypes.shape({
   current: classmatesArray,
   past: classmatesArray,
 });
+
+export const textbook = PropTypes.shape({
+  author: PropTypes.string.isRequired,
+  image_url: PropTypes.string.isRequired,
+  isbn: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
+});
+
+export const sectionToTextbookMap = (props, propName, componentName) => {
+  const textbooks = props[propName];
+  if (!Object.keys(textbooks).every(k => typeof k === 'string')) {
+    return new Error(`Keys must be section identifiers e.g. '(03)' in ${componentName}`);
+  }
+  return null;
+};
 
 export const evaluation = PropTypes.shape({
   course: PropTypes.number.isRequired,
@@ -43,17 +56,16 @@ export const evaluation = PropTypes.shape({
   year: PropTypes.string.isRequired,
 });
 
+export const integration = PropTypes.string.isRequired;
+
 // should match timetable.models.Offering fields
 const offering = PropTypes.shape({
   id: PropTypes.number.isRequired,
   section: PropTypes.number.isRequired,
   day: PropTypes.string.isRequired,
-  date_start: PropTypes.string.isRequired,
-  date_end: PropTypes.string.isRequired,
   time_start: PropTypes.string.isRequired,
   time_end: PropTypes.string.isRequired,
   location: PropTypes.string.isRequired,
-  is_short_course: PropTypes.bool.isRequired,
 });
 
 // should match SectionSerializer
@@ -84,10 +96,12 @@ const relatedCourseFields = {
   description: PropTypes.string.isRequired,
   department: PropTypes.string.isRequired,
   num_credits: PropTypes.number.isRequired,
-  areas: PropTypes.array.isRequired,
+  areas: PropTypes.string.isRequired,
   campus: PropTypes.string.isRequired,
   evals: PropTypes.arrayOf(evaluation).isRequired,
+  integrations: PropTypes.arrayOf(integration),
   // reactions?
+  textbooks: sectionToTextbookMap,
   // regexed courses?
   // popularity percent?
   prerequisites: PropTypes.string.isRequired,
@@ -123,6 +137,7 @@ export const normalizedSlot = PropTypes.shape({
   course: PropTypes.number.isRequired,
   section: PropTypes.number.isRequired,
   offerings: PropTypes.arrayOf(PropTypes.number).isRequired,
+  is_optional: PropTypes.bool.isRequired,
   is_locked: PropTypes.bool.isRequired,
 });
 
@@ -130,6 +145,7 @@ export const denormalizedSlot = PropTypes.shape({
   course: normalizedCourse.isRequired,
   section: normalizedSection.isRequired,
   offerings: PropTypes.arrayOf(offering).isRequired,
+  is_optional: PropTypes.bool.isRequired,
   is_locked: PropTypes.bool.isRequired,
 });
 
@@ -145,6 +161,7 @@ export const userInfo = PropTypes.shape({
   social_all: PropTypes.bool,
   emails_enabled: PropTypes.bool,
   school: PropTypes.string,
+  integrations: PropTypes.arrayOf(PropTypes.shape({})),
   userFirstName: PropTypes.string,
   userLastName: PropTypes.string,
   FacebookSignedUp: PropTypes.bool,

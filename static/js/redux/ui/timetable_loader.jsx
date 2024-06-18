@@ -12,21 +12,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
 
-import PropTypes from "prop-types";
-import React from "react";
+import PropTypes from 'prop-types';
+import React from 'react';
 
-/**
- * This component is the loading animation that appears in the top right when the
- * timetable is saving its changes to the database.
- */
 const TimetableLoader = ({ loading }) => {
   if (loading) {
-    return (
-      <div className="la-ball-clip-rotate-multiple">
-        <div />
-        <div />
-      </div>
-    );
+    return (<div className="la-ball-clip-rotate-multiple">
+      <div />
+      <div />
+    </div>);
   }
 
   return null;
@@ -37,3 +31,4 @@ TimetableLoader.propTypes = {
 };
 
 export default TimetableLoader;
+

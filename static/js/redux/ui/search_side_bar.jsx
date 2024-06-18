@@ -12,16 +12,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
 
-import PropTypes from "prop-types";
-import React from "react";
-import classnames from "classnames";
-import { getSectionTypeDisplayName, strPropertyCmp } from "../util";
-import * as SemesterlyPropTypes from "../constants/semesterlyPropTypes";
+import PropTypes from 'prop-types';
+import React from 'react';
+import classnames from 'classnames';
+import { getSectionTypeDisplayName, strPropertyCmp } from '../util';
+import * as SemesterlyPropTypes from '../constants/semesterlyPropTypes';
 
-/**
- * This component renders the side bar of the search results, which is where you can add
- * a section of a course or hover over a section to preview it on your timetable.
- */
 class SearchSideBar extends React.Component {
   constructor(props) {
     super(props);
@@ -35,40 +31,32 @@ class SearchSideBar extends React.Component {
   }
 
   mapSectionsToSlots(sections) {
-    return sections.sort(strPropertyCmp("meeting_section")).map((section) => (
-      // eslint-disable-next-line no-use-before-define
-      <SearchResultSection
+    return sections.sort(strPropertyCmp('meeting_section')).map(section =>
+      (<SearchResultSection
         key={this.props.hoveredResult.id + section.meeting_section}
         section={section.meeting_section}
-        locked={this.props.isSectionLocked(
-          this.props.hoveredResult.id,
-          section.meeting_section
-        )}
-        isOnActiveTimetable={this.props.isSectionOnActiveTimetable(
-          this.props.hoveredResult,
-          section
-        )}
-        hoverSection={() =>
-          this.props.hoverSection({ course: this.props.hoveredResult, section })
+        locked={this.props.isSectionLocked(this.props.hoveredResult.id, section.meeting_section)}
+        isOnActiveTimetable={
+          this.props.isSectionOnActiveTimetable(this.props.hoveredResult, section)
         }
-        unHoverSection={() => this.props.unHoverSection()}
-        onMouseDown={(event) => this.lockSectionWrapper(section.meeting_section, event)}
-      />
-    ));
+        hoverSection={() => this.props.hoverSection(this.props.hoveredResult,
+          section)}
+        unHoverSection={this.props.unHoverSection}
+        onMouseDown={event => this.lockSectionWrapper(section.meeting_section, event)}
+      />),
+    );
   }
 
   render() {
-    const sectionGrid = Object.keys(this.props.sectionTypeToSections)
-      .sort()
-      .map((sectionType) => {
-        const sectionTitle = `${getSectionTypeDisplayName(sectionType)} Sections`;
-        return (
-          <div key={sectionType}>
-            <h4> {sectionTitle} </h4>
-            {this.mapSectionsToSlots(this.props.sectionTypeToSections[sectionType])}
-          </div>
-        );
-      });
+    const sectionGrid = Object.keys(this.props.sectionTypeToSections).sort().map((sectionType) => {
+      const sectionTitle = `${getSectionTypeDisplayName(sectionType)} Sections`;
+      return (
+        <div key={sectionType}>
+          <h4> {sectionTitle} </h4>
+          {this.mapSectionsToSlots(this.props.sectionTypeToSections[sectionType])}
+        </div>
+      );
+    });
     return (
       <div className="search-bar__side">
         <div className="search-bar__side-sections">
@@ -90,7 +78,7 @@ SearchSideBar.defaultProps = {
 SearchSideBar.propTypes = {
   hoveredResult: SemesterlyPropTypes.denormalizedCourse,
   sectionTypeToSections: PropTypes.shape({
-    "*": PropTypes.arrayOf(SemesterlyPropTypes.denormalizedSection),
+    '*': PropTypes.arrayOf(SemesterlyPropTypes.denormalizedSection),
   }).isRequired,
   addCourse: PropTypes.func.isRequired,
   isSectionLocked: PropTypes.func.isRequired,
@@ -101,39 +89,35 @@ SearchSideBar.propTypes = {
 
 export default SearchSideBar;
 
-const SearchResultSection = ({
-  section,
-  locked,
-  hoverSection,
-  unHoverSection,
-  onMouseDown,
-  isOnActiveTimetable,
-}) => {
-  let rosterIndicator = null;
-  if (isOnActiveTimetable) {
-    rosterIndicator = (
-      <i title="Lock this section" className="fa fa-calendar-check-o" />
-    );
-  }
-  if (locked) {
-    rosterIndicator = <i title="Unlock this section" className="fa fa-lock" />;
-  }
+const SearchResultSection =
+  ({ section, locked, hoverSection, unHoverSection, onMouseDown, isOnActiveTimetable }) => {
+    let rosterIndicator = null;
+    if (isOnActiveTimetable) {
+      rosterIndicator = (<i
+        title="Lock this section"
+        className="fa fa-calendar-check-o"
+      />);
+    }
+    if (locked) {
+      rosterIndicator = (<i
+        title="Unlock this section"
+        className="fa fa-lock"
+      />);
+    }
 
-  return (
-    <h5
-      className={classnames("sb-side-sections", {
-        "on-active-timetable": isOnActiveTimetable,
-      })}
-      onMouseDown={onMouseDown}
-      onMouseEnter={hoverSection}
-      onMouseLeave={unHoverSection}
-      title={locked ? "Unlock this section" : "Lock this section"}
-    >
-      {`${section} `}
-      {rosterIndicator}
-    </h5>
-  );
-};
+    return (
+      <h5
+        className={classnames('sb-side-sections', { 'on-active-timetable': isOnActiveTimetable })}
+
+        onMouseDown={onMouseDown}
+        onMouseEnter={hoverSection}
+        onMouseLeave={unHoverSection}
+        title={locked ? 'Unlock this section' : 'Lock this section'}
+      >
+        {`${section} `}
+        {rosterIndicator}
+      </h5>);
+  };
 
 SearchResultSection.propTypes = {
   unHoverSection: PropTypes.func.isRequired,
@@ -143,3 +127,4 @@ SearchResultSection.propTypes = {
   hoverSection: PropTypes.func.isRequired,
   locked: PropTypes.bool.isRequired,
 };
+

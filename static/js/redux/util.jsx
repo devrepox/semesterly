@@ -11,19 +11,15 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
-/**
- * This file contains various utility functions, but mostly those for saving data to
- * local storage.
- */
-import Cookie from "js-cookie";
-import range from "lodash/range";
-import { lightSlotColor } from "./constants/colors";
-import { getUIErrorLogEndpoint } from "./constants/endpoints";
+
+import range from 'lodash/range';
+import { getLogFinalExamViewEndpoint } from './constants/endpoints';
+import COLOUR_DATA from './constants/colours';
 
 export const browserSupportsLocalStorage = () => {
   try {
-    localStorage.setItem("test", "test");
-    localStorage.removeItem("test");
+    localStorage.setItem('test', 'test');
+    localStorage.removeItem('test');
     return true;
   } catch (exception) {
     return false;
@@ -34,50 +30,63 @@ export const saveLocalCourseSections = (courseSections) => {
   if (!browserSupportsLocalStorage()) {
     return;
   }
-  localStorage.setItem("courseSections", JSON.stringify(courseSections));
+  localStorage.setItem('courseSections', JSON.stringify(courseSections));
 };
 export const saveLocalActiveIndex = (activeIndex) => {
   if (!browserSupportsLocalStorage()) {
     return;
   }
-  localStorage.setItem("active", activeIndex);
+  localStorage.setItem('active', activeIndex);
 };
 export const saveLocalPreferences = (preferences) => {
   if (!browserSupportsLocalStorage()) {
     return;
   }
-  localStorage.setItem("preferences", JSON.stringify(preferences));
+  localStorage.setItem('preferences', JSON.stringify(preferences));
 };
 export const saveLocalSemester = (semester) => {
   if (!browserSupportsLocalStorage()) {
     return;
   }
-  localStorage.setItem("semesterName", semester.name);
-  localStorage.setItem("year", semester.year);
-  localStorage.removeItem("semester"); // only use new format for semester
+  localStorage.setItem('semesterName', semester.name);
+  localStorage.setItem('year', semester.year);
+  localStorage.removeItem('semester'); // only use new format for semester
 };
 export const clearLocalTimetable = function deleteTimetableDataFromLocalStorage() {
   if (!browserSupportsLocalStorage()) {
     return;
   }
-  localStorage.removeItem("semester");
-  localStorage.removeItem("semesterName");
-  localStorage.removeItem("year");
-  localStorage.removeItem("courseSections");
-  localStorage.removeItem("active");
-  localStorage.removeItem("preferences");
+  localStorage.removeItem('semester');
+  localStorage.removeItem('semesterName');
+  localStorage.removeItem('year');
+  localStorage.removeItem('courseSections');
+  localStorage.removeItem('active');
+  localStorage.removeItem('preferences');
+};
+export const setFirstVisit = (time) => {
+  if (!browserSupportsLocalStorage()) {
+    return;
+  }
+  localStorage.setItem('firstVisit', time);
 };
 export const setFriendsCookie = (time) => {
   if (!browserSupportsLocalStorage()) {
     return;
   }
-  localStorage.setItem("friendsCookie", time);
+  localStorage.setItem('friendsCookie', time);
 };
 export const setTimeShownBanner = (time) => {
   if (!browserSupportsLocalStorage()) {
     return;
   }
-  localStorage.setItem("timeShownBanner", time);
+  localStorage.setItem('timeShownBanner', time);
+};
+export const setDeclinedNotifications = (declined) => {
+  if (!browserSupportsLocalStorage()) {
+    return;
+  }
+    // console.log("settings decline", declined);
+  localStorage.setItem('declinedNotifications', declined);
 };
 export const timeLapsedGreaterThan = (time, days) => {
   if (!browserSupportsLocalStorage()) {
@@ -85,33 +94,44 @@ export const timeLapsedGreaterThan = (time, days) => {
   }
   const timeNow = new Date();
   const windowInMilli = 1000 * 60 * 60 * 24 * days;
-  // console.log(timeNow.getTime(), Number(time), windowInMilli);
-  return timeNow.getTime() - Number(time) > windowInMilli;
+    // console.log(timeNow.getTime(), Number(time), windowInMilli);
+  return ((timeNow.getTime() - Number(time)) > windowInMilli);
 };
-export const timeLapsedInDays = (time) =>
-  (new Date().getTime() - Number(time)) / (1000 * 60 * 60 * 24);
+export const timeLapsedInDays = time =>
+  ((new Date()).getTime() - Number(time)) / (1000 * 60 * 60 * 24);
 export const getLocalTimetable = () => {
   if (!browserSupportsLocalStorage()) {
     return {};
   }
   try {
     return {
-      courseSections: JSON.parse(localStorage.getItem("courseSections")),
-      active: localStorage.getItem("active"),
+      courseSections: JSON.parse(localStorage.getItem('courseSections')),
+      active: localStorage.getItem('active'),
     };
   } catch (exception) {
     return {};
   }
 };
-
-export const getMaxTimetableHeightBasedOnWindowHeight = (height) => {
-  // Hard-coded hour height because not sure how to get it post-render
-  const hourHeight = 25 * 2;
-  const otherElementsHeight = 140; // Ex: Topbar, toolbar, footer
-  const maxHour = parseInt((height - otherElementsHeight) / hourHeight, 10);
-  const maxHeight = maxHour * hourHeight;
-  const height24Hours = 24 * hourHeight;
-  return Math.min(maxHeight, height24Hours);
+export const logFinalExamView = () => {
+  fetch(getLogFinalExamViewEndpoint(), {
+    method: 'POST',
+    credentials: 'include',
+  });
+};
+export const getMaxHourBasedOnWindowHeight = () => {
+  const calRow = $('.cal-row');
+  const lastRowY = calRow.last().position();
+  if (!lastRowY) {
+    return 0;
+  }
+  const lastHour = 7 + (calRow.length / 2);
+  const hourHeight = calRow.height() * 2;
+  const maxHour = parseInt(lastHour +
+    (($(document).height() - 250 - lastRowY.top) / hourHeight), 10);
+  if (maxHour < lastHour) {
+    return lastHour;
+  }
+  return Math.min(24, parseInt(maxHour, 10));
 };
 
 /*
@@ -128,43 +148,31 @@ export const checkStatus = (response) => {
 };
 
 // TODO: define map somewhere or use CHOICES in Section model
-export const getSectionTypeDisplayName = function getSectionTypeDisplayName(
-  sectionTypeCode
-) {
+export const getSectionTypeDisplayName = function getSectionTypeDisplayName(sectionTypeCode) {
   switch (sectionTypeCode) {
-    case "L":
-      return "Lecture";
-    case "T":
-      return "Tutorial";
-    case "P":
-      return "Lab/Practical";
+    case 'L':
+      return 'Lecture';
+    case 'T':
+      return 'Tutorial';
+    case 'P':
+      return 'Lab/Practical';
     default:
       return sectionTypeCode;
   }
 };
 
 // A comparison function for sorting objects by string property
-export const strPropertyCmp = (prop) => (first, second) =>
-  first[prop] > second[prop] ? 1 : -1;
+export const strPropertyCmp = prop => (first, second) => (first[prop] > second[prop] ? 1 : -1);
 
-export const isIncomplete = (prop) =>
-  prop === undefined || prop === "" || prop === null;
+export const isIncomplete = prop => prop === undefined || prop === '' || prop === null;
 
-export const getNextAvailableColour = (courseToColourIndex) =>
-  range(lightSlotColor.length).find(
-    (i) => !Object.values(courseToColourIndex).some((x) => x === i)
-  );
+export const getNextAvailableColour = courseToColourIndex =>
+  range(COLOUR_DATA.length).find(i => !Object.values(courseToColourIndex).some(x => x === i));
 
 export const generateCustomEventId = () =>
-  new Date().getTime() + Math.floor(Math.random() * 10000 + 1);
+  new Date().getTime() + Math.floor((Math.random() * 10000) + 1);
 
-export const slotToDisplayOffering = (
-  course,
-  section,
-  offering,
-  colourId,
-  colorData
-) => ({
+export const slotToDisplayOffering = (course, section, offering, colourId) => ({
   ...offering,
   colourId,
   courseId: course.id,
@@ -172,18 +180,5 @@ export const slotToDisplayOffering = (
   name: course.name,
   custom: false,
   meeting_section: section.meeting_section,
-  sectionId: section.id,
-  colorData,
 });
 
-export const reportUIError = (error) => {
-  fetch(getUIErrorLogEndpoint(), {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "X-CSRFToken": Cookie.get("csrftoken"),
-    },
-    method: "POST",
-    body: JSON.stringify(error),
-  });
-};

@@ -12,14 +12,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
 
-import PropTypes from "prop-types";
-import React from "react";
+import PropTypes from 'prop-types';
+import React from 'react';
 
-/**
- * This alert pops up when the user is trying to create a new timetable, but the current
- * timetable is not up-to-date yet (auto-save is still in progress).
- */
 class NewTimetableAlert extends React.Component {
+
   componentWillUnmount() {
     this.props.dismissSelf();
   }
@@ -32,7 +29,7 @@ class NewTimetableAlert extends React.Component {
   render() {
     return (
       <div className="conflict-alert change-semester-alert">
-        {this.props.msg}
+        { this.props.msg }
 
         <button
           onClick={() => this.handleClick()}
@@ -40,8 +37,8 @@ class NewTimetableAlert extends React.Component {
         >
           Create Anyway
         </button>
-      </div>
-    );
+
+      </div>);
   }
 }
 
@@ -52,3 +49,4 @@ NewTimetableAlert.propTypes = {
 };
 
 export default NewTimetableAlert;
+

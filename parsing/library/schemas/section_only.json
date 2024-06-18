@@ -24,8 +24,8 @@
     "fees": {},
     "instructors": {},
     "final_exam": {},
-    "meetings": {},
-    "course_section_id": {}
+    "textbooks": {},
+    "meetings": {}
   },
   "additionalProperties": false,
   "required": [

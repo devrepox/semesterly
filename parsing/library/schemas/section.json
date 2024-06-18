@@ -67,9 +67,6 @@
     "remaining_seats": {
       "type": "integer"
     },
-    "course_section_id": {
-      "type": "integer"
-    },
     "type": {
       "type": "string",
       "minLength": 1,
@@ -115,6 +112,28 @@
       },
       "additionalProperties": false
     },
+    "textbooks": {
+      "type": "array",
+      "items": {
+        "allOf": [
+          {
+            "$ref": "textbook.json#/"
+          }
+        ],
+        "properties": {
+          "kind": {},
+          "isbn": {},
+          "title": {},
+          "author": {},
+          "required": {}
+        },
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "isbn"
+        ]
+      }
+    },
     "meetings": {
       "type": "array",
       "items": {
@@ -130,8 +149,7 @@
           "time": {},
           "location": {},
           "course": {},
-          "section": {},
-          "is_short_course": {}
+          "section": {}
         },
         "additionalProperties": false,
         "required": [

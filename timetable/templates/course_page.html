@@ -1,4 +1,4 @@
-{% load static %}
+{% load staticfiles %}
 <!DOCTYPE html>
 
 <html lang="en">
@@ -10,15 +10,15 @@
 	<meta name="author" content="Noah Presler, Rohan Das, Felix Zhu, Max Yeo">
 
 	<!-- Facebook thumbnail info -->
-	<meta property="og:title" content="{{ course.code }} {{ course.name }} | Semester.ly" />
+	<meta property="og:title" content="{{ course.code }} {{ course.name }} | HorarioTEC" />
 	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content="Semesterly" />
-	<meta property="og:url" content="http://semester.ly" />
-	<meta property="og:image" content="http://i.imgur.com/Eem4KTj.png" />
+	<meta property="og:site_name" content="HorarioTEC" />
+	<meta property="og:url" content="https://horario-tec.sger.li" />
+	<meta property="og:image" content="{% static 'img/banner-horario-tec.jpg' %}" />
 	<meta property="og:description" content="{{ course.description }}" />
 	<meta property="fb:admins" content="535129063" />
 
-	<title>{{ course.code }} {{ course.name }} | Semester.ly</title>
+	<title>{{ course.code }} {{ course.name }} | HorarioTEC</title>
 	<link rel="shortcut icon" type="image/x-icon" href="{% static 'img/logo2.0-310x310.png' %}" />
 
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"
@@ -37,7 +37,7 @@
 		<div class="grid cf">
 			<a href="/">
 				<span id="logo"></span>
-				<h1>Semester.ly</h1>
+				<h1>HorarioTEC</h1>
 			</a>
 			<!-- <div id="social">
 					<div id="social-card">
@@ -173,7 +173,7 @@
 						</div>
 						<div id="call-to-action" class="col-1-1">
 							<a href="{{ url }}">
-								<span>Course evaluations, professor ratings, and more!</span>
+								<span>Course evaluations, professor ratings, textbooks and more!</span>
 								<svg viewBox="0 0 48 48">
 									<path
 										d="M20.17 31.17L23 34l10-10-10-10-2.83 2.83L25.34 22H6v4h19.34l-5.17 5.17zM38 6H10c-2.21 0-4 1.79-4 4v8h4v-8h28v28H10v-8H6v8c0 2.21 1.79 4 4 4h28c2.21 0 4-1.79 4-4V10c0-2.21-1.79-4-4-4z">
@@ -187,30 +187,32 @@
 						<div class="section-group cf">
 							<h3>Lecture Sections</h3>
 							{% for l in lectures %}
-							<div class="section" data-waitlist="{{ l.waitlist }}" data-enrolment="{{ l.enrolment }}"
-								data-size="{{ l.size }}" a>
-								{% if l.meeting_section %}
-								<h4>{{ l.meeting_section }}</h4>
+							{% if l %}
+							<div class="section" data-waitlist="{{ l.0.waitlist }}" data-enrolment="{{ l.0.enrolment }}"
+								data-size="{{ l.0.size }}" a>
+								{% if l.0.meeting_section %}
+								<h4>{{ l.0.meeting_section }}</h4>
 								{% else %}
 								<h4>No section number</h4>
 								{% endif %}
-								{% if l.location %}
-								<h5>{{ l.location }}</h5>
+								{% if l.0.location %}
+								<h5>{{ l.0.location }}</h5>
 								{% else %}
 								<h5>No location info</h5>
 								{% endif %}
-								{% if l.instructors %}
-								<h5>{{ l.instructors }}</h5>
+								{% if l.0.instructors %}
+								<h5>{{ l.0.instructors }}</h5>
 								{% else %}
 								<h5>No instructor info</h5>
 								{% endif %}
-								{% if l.offering_set.0.time_start %}
-								<h5>{{ l.offering_set.0.time_start }} - {{ l.offering_set.0.time_end }}</h5>
+								{% if l.0.time_start %}
+								<h5>{{ l.0.time_start }} - {{ l.0.time_end }}</h5>
 								{% else %}
 								<h5>No class times info</h5>
 								{% endif %}
 								<h5 class="enrollment"></h5>
 							</div>
+							{% endif %}
 							{% endfor %}
 						</div>
 						{% endif %}
@@ -218,17 +220,17 @@
 						<div class="section-group cf">
 							<h3>Tutorial Sections</h3>
 							{% for t in tutorials %}
-							<div class="section" data-waitlist="{{ t.waitlist }}" data-enrolment="{{ t.0.enrolment }}"
-								data-size="{{ t.size }}">
-								<h4>{{ t.meeting_section }}</h4>
-								<h5>{{ t.location }}</h5>
-								{% if t.instructors %}
-								<h5>{{ t.instructors }}</h5>
+							<div class="section" data-waitlist="{{ t.0.waitlist }}" data-enrolment="{{ t.0.enrolment }}"
+								data-size="{{ t.0.size }}">
+								<h4>{{ t.0.meeting_section }}</h4>
+								<h5>{{ t.0.location }}</h5>
+								{% if t.0.instructors %}
+								<h5>{{ t.0.instructors }}</h5>
 								{% else %}
 								<h5>No instructor info</h5>
 								{% endif %}
-								{% if t.offering_set.0.time_start %}
-								<h5>{{ t.offering_set.0.time_start }} - {{ t.offering_set.0.time_end }}</h5>
+								{% if t.0.time_start %}
+								<h5>{{ t.0.time_start }} - {{ t.0.time_end }}</h5>
 								{% else %}
 								<h5>No class times info</h5>
 								{% endif %}
@@ -241,17 +243,17 @@
 						<div class="section-group cf">
 							<h3>Lab/Practical Sections</h3>
 							{% for p in practicals %}
-							<div class="section" data-waitlist="{{ p.waitlist }}" data-enrolment="{{ p.0.enrolment }}"
-								data-size="{{ p.size }}">
-								<h4>{{ p.meeting_section }}</h4>
-								<h5>{{ p.location }}</h5>
-								{% if p.instructors %}
-								<h5>{{ p.instructors }}</h5>
+							<div class="section" data-waitlist="{{ p.0.waitlist }}" data-enrolment="{{ p.0.enrolment }}"
+								data-size="{{ p.0.size }}">
+								<h4>{{ p.0.meeting_section }}</h4>
+								<h5>{{ p.0.location }}</h5>
+								{% if p.0.instructors %}
+								<h5>{{ p.0.instructors }}</h5>
 								{% else %}
 								<h5>No instructor info</h5>
 								{% endif %}
-								{% if p.offering_set.0.time_start %}
-								<h5>{{ p.offering_set.0.time_start }} - {{ p.offering_set.0.time_end }}</h5>
+								{% if p.0.time_start %}
+								<h5>{{ p.0.time_start }} - {{ p.0.time_end }}</h5>
 								{% else %}
 								<h5>No class times info</h5>
 								{% endif %}
@@ -273,17 +275,14 @@
 
 	</footer>
 
-	<!-- Google analytics script -->
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-SZDMY4X32Q"></script>
 	<script>
-		(function (i, s, o, g, r, a, m) {
-			i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-				(i[r].q = i[r].q || []).push(arguments)
-			}, i[r].l = 1 * new Date(); a = s.createElement(o),
-				m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
 
-		ga('create', 'UA-68704308-1', 'auto');
-		ga('send', 'pageview');
+		gtag('config', 'G-SZDMY4X32Q');
 	</script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 	<script src="https://malsup.github.com/jquery.cycle2.js"></script>

@@ -17,11 +17,10 @@ import re
 import simplejson as json
 
 from datetime import datetime
-import dateparser
 
 from parsing.library.words import conjunctions_and_prepositions
 
-UNICODE_WHITESPACE = re.compile(r"(?:\u00a0)|(?:\xc2)|(?:\xa0)", re.IGNORECASE)
+UNICODE_WHITESPACE = re.compile(r'(?:\u00a0)|(?:\xc2)|(?:\xa0)', re.IGNORECASE)
 
 
 def clean(dirt):
@@ -35,7 +34,7 @@ def clean(dirt):
         - filter out None valued key, value pairs
         - `None` on empty dict
 
-    `str`::
+    `basestring`::
         - convert unicode whitespace to ascii
         - strip extra whitespace
         - None on empty string
@@ -58,7 +57,7 @@ def clean(dirt):
     elif isinstance(dirt, list):
         cleaned = [x for x in map(clean, dirt) if x is not None]
     elif isinstance(dirt, str):
-        cleaned = UNICODE_WHITESPACE.sub(" ", dirt).strip()
+        cleaned = UNICODE_WHITESPACE.sub(' ', dirt).strip()
     else:
         return dirt
 
@@ -114,19 +113,19 @@ class DotDict(dict):
             dct (dict): Dictionary to create DotDict with.
         """
         for key, value in list(dct.items()):
-            if hasattr(value, "keys"):
+            if hasattr(value, 'keys'):
                 value = DotDict(value)
             self[key] = value
 
     def as_dict(self):
         """Return pure dictionary representation of self."""
-
         def rec(d):
             if isinstance(d, DotDict):
                 return d.as_dict()
             return d
-
-        return {key: rec(value) for key, value in list(self.items())}
+        return {
+            key: rec(value) for key, value in list(self.items())
+        }
 
 
 def pretty_json(obj):
@@ -138,9 +137,10 @@ def pretty_json(obj):
     Returns:
         str: Prettified JSON.
     """
-    return "{}".format(
-        json.dumps(obj, sort_keys=True, indent=2, separators=(",", ": "))
-    )
+    return '{}'.format(json.dumps(obj,
+                                  sort_keys=True,
+                                  indent=2,
+                                  separators=(',', ': ')))
 
 
 def safe_cast(val, to_type, default=None):
@@ -167,7 +167,7 @@ def update(d, u):
         >>> update({0: {1: 2, 3: 4}}, {1: 2, 0: {5: 6, 3: 7}})
         {0: {1: 2}}
     """
-    for k, v in u.items():
+    for k, v in list(u.items()):
         if isinstance(v, collections.Mapping):
             r = update(d.get(k, {}), v)
             d[k] = r
@@ -207,12 +207,14 @@ def dir_to_dict(path):
     Returns:
         dict: Dictionary representation of the directory.
     """
-    d = {"name": os.path.basename(path)}
+    d = {'name': os.path.basename(path)}
     if os.path.isdir(path):
-        d["kind"] = "directory"
-        d["children"] = [dir_to_dict(os.path.join(path, x)) for x in os.listdir(path)]
+        d['kind'] = "directory"
+        d['children'] = [
+            dir_to_dict(os.path.join(path, x)) for x in os.listdir(path)
+        ]
     else:
-        d["kind"] = "file"
+        d['kind'] = "file"
     return d
 
 
@@ -231,7 +233,7 @@ def titlize(name):
 
     titled = []
     for idx, word in enumerate(name.split()):
-        if re.match(r"^[ivx]+$", word.lower()) is not None:
+        if re.match(r'^[ivx]+$', word.lower()) is not None:
             word = word.upper()
         elif idx == 0:
             word = word.title()
@@ -240,7 +242,7 @@ def titlize(name):
         else:
             word = word.title()
         titled.append(word)
-    return " ".join(titled)
+    return ' '.join(titled)
 
 
 def dict_filter_by_dict(a, b):
@@ -323,80 +325,16 @@ def time24(time):
     if isinstance(time, str):
         time = dateutil.parser.parse(time)
     if not isinstance(time, datetime):
-        raise ValidationError("invalid time input {}".format(time))
-    return time.strftime("%H:%M")
-
-
-def short_date(date):
-    """Convert input to %m-%d-%y format. Returns None if input is None.
-
-    Args:
-        date (str): date in reasonable format
-
-    Returns:
-        str: Date in format %m-%d-%y if the input is not None.
-
-    Raises:
-        ParseError: Unparseable time input.
-    """
-    from parsing.library.validator import ValidationError
-
-    if date is not None:
-        if isinstance(date, str):
-            date = dateparser.parse(date)
-        if not isinstance(date, datetime):
-            raise ValidationError("invalid date input {}".format(date))
-        return date.strftime("%m-%d-%y")
-    else:
-        return None
-
-
-def is_short_course(date_start, date_end, short_course_weeks_limit):
-    """Checks whether a course's duration is longer than a short term
-        course week limit or not. Limit is defined in the config file for
-        the corresponding school.
-
-    Arguments:
-        date_start {str} -- Any reasonable date value for start date
-        date_end {str} -- Any reasonable date value for end date
-        short_course_weeks_limit {int} -- Number of weeks a course can be
-        defined as "short term".
-
-    Raises:
-        ValidationError: Invalid date input
-        ValidationError:  Invalid date input
-
-    Returns:
-        bool -- Defines whether the course is short term or not.
-    """
-
-    from parsing.library.validator import ValidationError
-
-    is_short = False
-
-    if short_course_weeks_limit is not None:
-        if isinstance(date_start, str):
-            date_start = dateparser.parse(date_start)
-        if isinstance(date_end, str):
-            date_end = dateparser.parse(date_end)
-        if not isinstance(date_start, datetime):
-            raise ValidationError("invalid date input {}".format(date_start))
-        if not isinstance(date_end, datetime):
-            raise ValidationError("invalid date input {}".format(date_end))
-        date_diff = date_end - date_start
-        is_short = date_diff.days <= short_course_weeks_limit * 7
-
-    return is_short
+        raise ValidationError('invalid time input {}'.format(time))
+    return time.strftime('%H:%M')
 
 
 class SimpleNamespace:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
-
     def __repr__(self):
         keys = sorted(self.__dict__)
         items = ("{}={!r}".format(k, self.__dict__[k]) for k in keys)
         return "{}({})".format(type(self).__name__, ", ".join(items))
-
     def __eq__(self, other):
         return self.__dict__ == other.__dict__

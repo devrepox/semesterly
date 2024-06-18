@@ -61,8 +61,8 @@
           "fees": {},
           "instructors": {},
           "final_exam": {},
-          "meetings": {},
-          "course_section_id": {}
+          "textbooks": {},
+          "meetings": {}
         },
         "additionalProperties": false,
         "required": [
@@ -99,8 +99,15 @@
         "_comment": "'days' or 'dates' requirement nested into structure"
       },
       {
+        "allOf": [
+          {
+            "$ref": "textbook.json#/"
+          }
+        ],
         "properties": {
-          "kind": {},
+          "kind": {
+            "enum": ["textbook_link"]
+          },
           "school": {},
           "course": {},
           "section": {},
@@ -115,8 +122,15 @@
         ]
       },
       {
+        "allOf": [
+          {
+            "$ref": "textbook.json#/"
+          }
+        ],
         "properties": {
-          "kind": {},
+          "kind": {
+            "enum": ["textbook"]
+          },
           "isbn": {},
           "detail_url": {},
           "image_url": {},

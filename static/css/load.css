@@ -83,7 +83,7 @@
   text-align: center;
   font-size: 10px;
   position:absolute;
-  z-index:11;
+  z-index:10000;
   top:0;
   right: 10%;
 }

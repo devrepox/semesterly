@@ -127,9 +127,9 @@
           "fees": {},
           "instructors": {},
           "final_exam": {},
+          "textbooks": {},
           "meetings": {},
-          "course": {},
-          "course_section_id": {}
+          "course": {}
         },
         "additionalProperties": false,
         "required": [

@@ -12,59 +12,55 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
 
-import PropTypes from "prop-types";
-import React from "react";
-import classnames from "classnames";
-import renderHTML from "react-render-html";
-import * as SemesterlyPropTypes from "../constants/semesterlyPropTypes";
+import PropTypes from 'prop-types';
+import React from 'react';
+import classnames from 'classnames';
+import renderHTML from 'react-render-html';
+import * as SemesterlyPropTypes from '../constants/semesterlyPropTypes';
 
-/**
- * This component renders a single evaluation, displaying the year, professor, stars,
- * and summary of the evaluation.
- */
 class Evaluation extends React.Component {
   render() {
     const { evalData } = this.props;
     let details = null;
     let prof = null;
 
-    if (!this.props.mini) {
-      // only show extra information if this eval isn't mini
-      // (i.e. full evaluation, not nav item for full evaluations)
-      const s = `<p>${evalData.summary
-        .replace(/\u00a0/g, " ")
-        .replace(/\n/g, "<br />")}</p>`;
-      details = <div className="eval-item__details">{renderHTML(s)}</div>;
-      prof = (
-        <div className="eval-item__prof">
-          <b>Professor: {evalData.professor}</b>
+    if (!this.props.mini) { // only show extra information if this eval isn't mini
+            // (i.e. full evaluation, not nav item for full evaluations)
+      const s = `<p>${evalData.summary.replace(/\u00a0/g, ' ').replace(/\n/g, '<br />')}</p>`;
+      details = (
+        <div className="eval-item__details">
+          {renderHTML(s)}
         </div>
-      );
+            );
+      prof = (
+        <div className="eval-item__prof"><b>Professor: {evalData.professor}</b></div>
+            );
     }
 
-    // extract last name (if present)
+        // extract last name (if present)
     const shortProfName = (name) => {
       if (!name) {
-        return "";
+        return '';
       }
 
-      const wrapParen = (s) => ` (${s})`;
+      const wrapParen = s => ` (${s})`;
 
-      const words = name.split(/\s+/).filter((n) => n !== "");
+      const words = name.split(/\s+/).filter(n => n !== '');
 
       if (words.length === 0) {
-        return "";
+        return '';
       } else if (words.length >= 2) {
         return wrapParen(words[1]);
       }
       return wrapParen(words[0]);
     };
 
-    const year =
-      evalData.year.indexOf(":") > -1 ? evalData.year.replace(":", " ") : evalData.year;
+    const year = evalData.year.indexOf(':') > -1 ?
+            evalData.year.replace(':', ' ') :
+            evalData.year;
     return (
       <div
-        className={classnames("eval-item", {
+        className={classnames('eval-item', {
           mini: this.props.mini,
           selected: !this.props.mini,
         })}
@@ -73,7 +69,9 @@ class Evaluation extends React.Component {
           <div className="year truncate">
             <b>
               {year}
-              {shortProfName(evalData.professor)}
+              {!evalData.unique_term_year &&
+                            shortProfName(evalData.professor)
+                            }
             </b>
           </div>
           {prof}
@@ -84,14 +82,11 @@ class Evaluation extends React.Component {
                 className="rating"
               />
             </div>
-            <div className="numeric-rating">
-              <b>{`(${evalData.score})`}</b>
-            </div>
+            <div className="numeric-rating"><b>{`(${evalData.score})`}</b></div>
           </div>
         </div>
         {details}
-      </div>
-    );
+      </div>);
   }
 }
 
@@ -105,3 +100,4 @@ Evaluation.propTypes = {
 };
 
 export default Evaluation;
+

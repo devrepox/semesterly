@@ -17,7 +17,7 @@ h1, h2, h5 {
 /* Header */
 header {
 	position: fixed;
-	z-index: 10;
+	z-index: 100;
 	width: 100%;
 	height: 50px;
 	padding: 10px;
@@ -31,7 +31,6 @@ header.down {
 	border-bottom: 1px solid transparent;
 }
 header h1 {
-	color: #34495E;
 	float: left;
 	font-size: 26px;
 	line-height: 30px;
@@ -165,10 +164,6 @@ header nav a:hover {
     height: 50px;
     width: 15.5%;
     filter: grayscale(100%);
-}
-
-.author:hover {
-	filter: none;
 }
 
 #hub {
@@ -322,14 +317,6 @@ footer ul li a i.fa-at {
 	line-height: 24px;
 	background-color: #409036;
 }
-footer ul li a i.fa-bookmark {
-	line-height: 24px;
-	background-color: #808080;
-}
-footer ul li a i.fa-lock {
-	line-height: 24px;
-	background-color: #808080;
-}
 footer h6 {
 	text-align: center;
 	font-size: 10px;
@@ -344,10 +331,9 @@ footer h6 {
 }
 
 @media(max-width: 766px) {
-	.article-link {
-		max-width: 100%;  
-		height: auto;  
-	}
+/*	.article-link {
+		border: 10px solid #F3F3F3;
+	}*/
 	.article {
 		padding: 20px 0px;
 	}

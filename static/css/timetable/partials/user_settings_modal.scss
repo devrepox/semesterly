@@ -1,40 +1,37 @@
-.user-settings-modal {
+.welcome-modal {
+  height: 745px;
+  max-height: 90%;
+  max-width: 500px;
+
   > div {
     height: 100%;
     outline: none;
   }
 
   .modal-header {
-    @include theme() {
-      background-color: t("modal-header-background");
-      border-bottom: 1px solid t("modal-border-color");
-    }
+    background-color: $geee;
+    border-bottom: 1px solid $gddd;
     padding: 25px;
     position: relative;
     text-align: left;
   }
 
-  .name-greeting {
-    font-size: 2.5rem;
-    margin-bottom: 5px;
-    margin-top: 5px;
-    text-align: left;
-  }
-
   .pro-pic {
-    @include theme() {
-      border: 2px solid t("modal-border-color");
-    }
+    border: 2px solid $gddd;
     box-shadow: 0 2px 2px $g188-transparent-4;
     z-index: 1;
   }
 
-  .modal-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
+  .modal-content {
     text-align: center;
-    padding: 26px 0 20px;
+
+    form {
+      text-align: left;
+    }
+  }
+
+  .modal-body {
+    padding: 42px 0 20px;
 
     p {
       color: $gaaa;
@@ -57,14 +54,7 @@
       text-align: left;
     }
 
-    span {
-      color: white;
-    }
-
-    button,
-    input,
-    select,
-    textarea {
+    button, input, select, textarea {
       font-family: inherit;
       font-size: inherit;
       margin-right: 20px;
@@ -99,9 +89,7 @@
     }
 
     .show-delete-dropdown {
-      @include theme() {
-        border-bottom: 1px solid t("modal-border-color");
-      }
+      border-bottom: 1px solid #eee;
     }
 
     .Select {
@@ -117,25 +105,19 @@
     }
   }
 
-  .preference {
-    padding: 0 20px 15px;
+  .switch-slide {
+    float: right;
+    margin-left: 15px;
+  }
 
-    .alert-danger {
-      @include theme() {
-        background-color: t("alert-danger-background");
-        border-color: t("modal-border-color");
-      }
+  .switch-label {
+    &::after {
+      background: $switch-blue;
     }
   }
 
-  .preference-row {
-    display: flex;
-    padding: 0 0 15px;
-    column-gap: 20px;
-
-    .preference-wrapper {
-      flex: 1;
-    }
+  .preference {
+    padding: 0 20px 15px;
   }
 
   .preference-attn {
@@ -144,10 +126,9 @@
     border-top: 1px solid $gdee2ff;
   }
 
-  .user-settings-modal__notifications {
-    @include theme() {
-      border-bottom: 1px solid t("modal-border-color");
-    }
+  .welcome-modal__notifications {
+    border-bottom: 1px solid $geee;
+    border-top: 1px solid $geee;
     padding-top: 15px;
 
     &.preference-attn-yellow {
@@ -166,6 +147,16 @@
     }
   }
 
+  .abnb-btn {
+    padding-bottom: 14px !important;
+    padding-top: 15px !important;
+
+    i {
+      font-size: 14px;
+      margin-top: 2px;
+    }
+  }
+
   .disclaimer {
     &.ctr {
       margin-bottom: 0;
@@ -175,7 +166,7 @@
   }
 }
 
-.user-settings-modal__notifications {
+.welcome-modal__notifications {
   &.preference-attn {
     h4 {
       color: $primary-navy;
@@ -206,7 +197,7 @@
 }
 
 .modal-body {
-  .user-settings-modal__notifications {
+  .welcome-modal__notifications {
     h3 {
       font-size: 14px;
       font-weight: bold;
@@ -217,7 +208,7 @@
 }
 
 @media (max-width: 766px) {
-  .user-settings-modal {
+  .welcome-modal {
     .modal-body {
       padding: 22px 0 20px;
 
@@ -229,7 +220,7 @@
 }
 
 @media (max-width: 499px) {
-  .user-settings-modal {
+  .welcome-modal {
     .modal-body {
       p {
         font-size: 12px;

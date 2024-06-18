@@ -12,17 +12,16 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
 
-import { connect } from "react-redux";
-import DayCalendar from "../DayCalendar";
-import { saveTimetable } from "../../actions/user_actions";
-import { handleCreateNewTimetable } from "../../actions/timetable_actions";
+import { connect } from 'react-redux';
+import DayCalendar from '../day_calendar';
+import { saveTimetable } from '../../actions/user_actions';
+import { handleCreateNewTimetable } from '../../actions/timetable_actions';
 import {
-  createICalFromTimetable,
-  fetchShareTimetableLink,
-} from "../../actions/calendar_actions";
-import { getMaxEndHour } from "../../state";
-import { preferencesActions } from "../../state/slices/preferencesSlice";
-import { saveCalendarModalActions } from "../../state/slices/saveCalendarModalSlice";
+    createICalFromTimetable,
+    fetchShareTimetableLink,
+} from '../../actions/calendar_actions';
+import { togglePreferenceModal, triggerSaveCalendarModal } from '../../actions/modal_actions';
+import { getMaxEndHour } from '../../reducers/root_reducer';
 
 const mapStateToProps = (state) => {
   const { isFetchingShareLink, shareLink, shareLinkValid } = state.calendar;
@@ -38,13 +37,17 @@ const mapStateToProps = (state) => {
   };
 };
 
-const DayCalendarContainer = connect(mapStateToProps, {
-  // NOTE: uses this syntax to avoid onClick accidentally passing a callback
-  saveTimetable: () => saveTimetable(),
-  fetchShareTimetableLink,
-  triggerSaveCalendarModal: saveCalendarModalActions.toggleSaveCalendarModal,
-  createICalFromTimetable,
-  handleCreateNewTimetable,
-})(DayCalendar);
+const DayCalendarContainer = connect(
+    mapStateToProps,
+  {
+    // NOTE: uses this syntax to avoid onClick accidentally passing a callback
+    saveTimetable: () => saveTimetable(),
+    fetchShareTimetableLink,
+    togglePreferenceModal,
+    triggerSaveCalendarModal,
+    createICalFromTimetable,
+    handleCreateNewTimetable,
+  },
+)(DayCalendar);
 
 export default DayCalendarContainer;

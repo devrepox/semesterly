@@ -12,14 +12,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 */
 
-import PropTypes from "prop-types";
-import React from "react";
+import PropTypes from 'prop-types';
+import React from 'react';
 
-/**
- * This alert pops up when the user is not logged in, has a timetable, and wants to
- * change the semester. It asks them to confirm that they want to change the semester
- * because a non-logged in user can only have one timetable at a time.
- */
 class ChangeSemesterAlert extends React.Component {
   componentWillUnmount() {
     this.props.dismissSelf();
@@ -33,16 +28,19 @@ class ChangeSemesterAlert extends React.Component {
   render() {
     return (
       <div className="change-semester-alert">
-        {this.props.msg}
+        { this.props.msg }
 
-        <button onClick={() => this.handleClick()} className="conflict-alert-btn">
-          Change Semester Anyway
+        <button
+          onClick={() => this.handleClick()}
+          className="conflict-alert-btn"
+        >
+        Change Semester Anyway
         </button>
         <small className="alert-extra">
           Psst – Signing up allows you to save multiple timetables for all semesters!
         </small>
-      </div>
-    );
+
+      </div>);
   }
 }
 
@@ -54,3 +52,4 @@ ChangeSemesterAlert.propTypes = {
 };
 
 export default ChangeSemesterAlert;
+

@@ -1,12 +1,3 @@
-docs
-venv
 node_modules/
-htmlcov/
 static/js/modules/
 static/js/redux/__tests__/*/__snapshots__/
-static/bundles/
-static/admin/
-static/django_extensions/
-static/drf-yasg/
-static/rest_framework/
-static/ckeditor/

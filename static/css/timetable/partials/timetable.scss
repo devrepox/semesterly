@@ -12,14 +12,6 @@ body {
   th {
     font-family: $font-primary;
   }
-
-  &.hoverCustomSlot {
-    cursor: crosshair;
-  }
-}
-
-.addingCustomSlot {
-  color: #16a085;
 }
 
 .cal-btn-wrapper {
@@ -35,25 +27,16 @@ button {
     line-height: 30px;
     outline: none;
     position: relative;
-    transition: background-color 0.3s;
+    transition: background-color .3s;
     width: 30px;
 
     &:hover,
     &:active {
-      @include theme() {
-        color: t("toolbar-icon-hover");
-      }
+      color: $blue-dark;
     }
 
     &.add-button {
       margin-right: 2px;
-    }
-
-    &.add-button-manual-hover {
-      margin-right: 2px;
-      @include theme() {
-        color: t("toolbar-icon-hover");
-      }
     }
 
     i {
@@ -72,14 +55,13 @@ button {
     border-radius: 4px;
     float: right;
     margin-right: 2px;
-    transition: color 0.3s;
+    transition: color .3s;
 
     &:hover {
-      @include theme() {
-        background-color: t("row-button-hover-background-color");
-      }
+      background-color: $gddd;
     }
   }
+
 }
 
 .cal-row {
@@ -131,22 +113,6 @@ button {
   border-bottom: 0;
   margin-top: 20px;
   padding: 5px;
-
-  .custom-instructions {
-    @include theme() {
-      color: t("text-color-thin");
-    }
-    line-height: 30px;
-    margin: 0 10px;
-    font-size: 15px;
-    font-weight: 300;
-  }
-
-  @media screen and (max-width: 550px) {
-    .custom-instructions {
-      display: none;
-    }
-  }
 }
 
 .cal-cell {
@@ -160,35 +126,24 @@ button {
 }
 
 .fc-right {
-  display: flex;
-  align-items: center;
-
   .share-course-link-wrapper {
-    @include theme() {
-      background-color: t("tooltip-background");
-    }
+    top: auto;
     right: auto;
-    margin-left: -154px;
-    margin-top: 40px;
+    display: block;
+    margin-left: -213px !important;
+    margin-top: 36px;
   }
 }
 
 .save-timetable {
   img {
-    font-size: 24px;
-    height: 24px;
-    width: 24px;
-    filter: invert(48%) sepia(0%) saturate(0%) hue-rotate(5deg) brightness(96%)
-      contrast(92%);
+    display: inline-block;
+    font-size: 18px;
+    height: 18px;
+    left: 7px;
+    line-height: 30px;
+    position: absolute;
+    top: 4px;
+    width: 18px;
   }
-
-  img:hover {
-    @include theme() {
-      filter: t("toolbar-img-icon-hover-filter");
-    }
-  }
-}
-
-.timetable-footer {
-  margin-bottom: 0px;
 }

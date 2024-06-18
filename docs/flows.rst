@@ -11,9 +11,10 @@ Initalization
 When a user loads the home timetable page, ``FeatureFlowView`` inside of
 ``timetable.utils`` is used to handle the request. On initial page load,
 the frontend requires some data to initialize the redux state, like
-information about the current user and the list of possible semesters for the
-school. This initial data is created inside of the view, and passed in as a single json
-string in the response context:
+information about the current user, the list of possible semesters for the
+school, and the list of student integrations. This initial data is created
+inside of the view, and passed in as a single json string in the response
+context:
 
     .. code-block:: python
 
@@ -28,6 +29,7 @@ string in the response context:
                     'currentSemester': curr_sem_index,
                     'allSemesters': all_semesters,
                     'uses12HrTime': self.school in AM_PM_SCHOOLS,
+                    'studentIntegrations': integrations,
                     'examSupportedSemesters': map(all_semesters.index,
                                                   final_exams_available.get(self.school, [])),
 
@@ -119,13 +121,13 @@ and act accordingly. In practice, this is done by switching on the name of the f
         const handleFlows = featureFlow => (dispatch) => {
             switch (featureFlow.name) {
                 case 'SIGNUP':
-                    dispatch(signupModalActions.showSignupModal());
+                    dispatch({ type: ActionTypes.TRIGGER_SIGNUP_MODAL });
                     break;
                 case 'USER_ACQ':
-                    dispatch(userAcquisitionModalActions.triggerAcquisitionModal());
+                    dispatch({ type: ActionTypes.TRIGGER_ACQUISITION_MODAL });
                     break;
                 case 'SHARE_TIMETABLE':
-                    dispatch(timetablesActions.cachedTimetableLoaded());
+                    dispatch({ type: ActionTypes.CACHED_TT_LOADED });
                     dispatch(lockTimetable(featureFlow.sharedTimetable, true, initData.currentUser.isLoggedIn));
                     break;
                 // ... etc.
@@ -147,7 +149,7 @@ We start be defining a new endpoint for this feature flow:
 
     .. code-block:: python
 
-        re_path(r'course/(?P<code>.+?)/(?P<sem_name>.+?)/(?P<year>.+?)/*$',
+        url(r'course/(?P<code>.+?)/(?P<sem_name>.+?)/(?P<year>.+?)/*$',
                            courses.views.CourseModal.as_view())
 
 Then we create a new ``FeatureFlowView`` for this endpoint which needs to do two things: define
@@ -210,7 +212,8 @@ by simply declaring this view directly inside of the urls file:
 
     .. code-block:: python
 
-        re_path(r'^signup/*$/', FeatureFlowView.as_view(feature_name='SIGNUP')
+        url(r'^signup/*$/', FeatureFlowView.as_view(feature_name='SIGNUP')
+
 
 see https://github.com/noahpresler/semesterly/pull/838 for the 
 original pull request implementing feature flows

@@ -13,46 +13,41 @@ GNU General Public License for more details.
 */
 
 /* server endpoints */
-export const getLogiCalEndpoint = () => "/user/log_ical/";
-export const getCourseInfoEndpoint = (courseId, semester) =>
-  `/courses/${semester}/id/${courseId}/`;
-export const getCourseSearchEndpoint = (query, semester, page = 1, limit = 6) =>
-  `/search/${semester}/${query}/?page=${page}&limit=${limit}`;
-export const getTimetablesEndpoint = () => "/timetables/";
-export const getLoadSavedTimetablesEndpoint = (semester) =>
-  `/user/timetables/${semester.name}/${semester.year}/`;
-export const getSaveTimetableEndpoint = () => "/user/timetables/";
-export const getPersonalEventEndpoint = () => "/user/events/";
-export const getDeleteTimetableEndpoint = (semester, name) =>
-  `/user/timetables/${semester.name}/${semester.year}/${name}/`;
-export const getTimetablePreferencesEndpoint = (id) =>
-  `/user/timetables/${id}/preferences/`;
-export const getSaveSettingsEndpoint = () => "/user/settings/";
-export const getClassmatesEndpoint = (semester, courses) =>
-  `/user/classmates/${semester.name}/${semester.year}?${$.param({
-    course_ids: courses,
-  })}`;
-export const getClassmatesInCourseEndpoint = (school, semester, courseId) =>
-  `/course_classmates/${school}/${semester}/id/${courseId}/`;
-export const getMostClassmatesCountEndpoint = (semester, courses) =>
-  `/user/classmates/${semester.name}/${semester.year}?${$.param({
-    course_ids: courses,
-    count: true,
-  })}`;
-export const getFriendsEndpoint = (semester) =>
-  `/user/classmates/${semester.name}/${semester.year}/`;
-export const getSchoolInfoEndpoint = (school) => `/school/${school}/`;
-export const getReactToCourseEndpoint = () => "/user/reactions/";
-export const getRequestShareTimetableLinkEndpoint = () => "/timetables/links/";
-export const acceptTOSEndpoint = () => "/tos/accept/";
-export function getCourseShareLinkFromModal(code, semester) {
-  return `/course/${encodeURIComponent(code)}/${semester.name}/${semester.year}`;
-}
-// TODO: ${window.location.href.split('/')[2]} insert above ^
+export const getAddTTtoGCalEndpoint = () => '/user/gcal/';
+export const getLogiCalEndpoint = () => '/user/log_ical/';
+export const getLogFinalExamViewEndpoint = () => '/user/log_final_exam/';
+export const getLogFacebookAlertViewEndpoint = () => '/user/log_fb_alert_view/';
+export const getLogFacebookAlertClickEndpoint = () => '/user/log_fb_alert_click/';
+export const getCourseInfoEndpoint = (courseId, semester) => `/courses/${semester}/id/${courseId}/`;
+export const getCourseSearchEndpoint = (query, semester) => `/search/${semester}/${query}/`;
+export const getTimetablesEndpoint = () => '/timetables/';
+export const getLoadSavedTimetablesEndpoint = semester => `/user/timetables/${semester.name}/${semester.year}/`;
+export const getSaveTimetableEndpoint = () => '/user/timetables/';
+export const getDeleteTimetableEndpoint = (semester, name) => `/user/timetables/${semester.name}/${semester.year}/${name}/`;
+export const getSaveSettingsEndpoint = () => '/user/settings/';
+export const getClassmatesEndpoint = (semester, courses) => `/user/classmates/${semester.name}/${semester.year}?${$.param({ course_ids: courses })}`;
+export const getClassmatesInCourseEndpoint = (school, semester, courseId) => `/course_classmates/${school}/${semester}/id/${courseId}/`;
+export const getMostClassmatesCountEndpoint = (semester, courses) => `/user/classmates/${semester.name}/${semester.year}?${$.param({ course_ids: courses, count: true })}`;
+export const getFriendsEndpoint = semester => `/user/classmates/${semester.name}/${semester.year}/`;
+export const getSchoolInfoEndpoint = school => `/school/${school}/`;
+export const getReactToCourseEndpoint = () => '/user/reactions/';
+export const getRequestShareTimetableLinkEndpoint = () => '/timetables/links/';
+export const getSetRegistrationTokenEndpoint = () => '/registration-token/';
+export const deleteRegistrationTokenEndpoint = endpoint => `/registration-token/${endpoint}/`;
+export const getIntegrationEndpoint = (integrationId, courseId) => `/integrations/${integrationId}/course/${courseId}/`;
+export const getFinalExamSchedulerEndpoint = () => '/exams/';
+export const getRequestShareExamLinkEndpoint = () => '/exams/links/';
+export const acceptTOSEndpoint = () => '/tos/accept/';
 
 export function getCourseShareLink(code, semester) {
-  return `/course/${encodeURIComponent(code)}/${semester.name}/${semester.year}`;
+  return `${window.location.protocol}//${window.location.href.split('/')[2]}/course/${encodeURIComponent(code)}/${semester.name}/${semester.year}`;
 }
 
-export const getNewsEndpoint = () => "/notifications/news";
-export const getUIErrorLogEndpoint = () => "/ui-error-logs/";
+export function getCourseShareLinkFromModal(code, semester) {
+  return getCourseShareLink(code, semester);
+}
+
+export function getExamShareLink(hash) {
+  return `${window.location.protocol}//${window.location.href.split('/')[2]}/exams/links/${encodeURIComponent(hash)}/`;
+}
+

@@ -169,7 +169,7 @@ class Parser(BaseParser):
 
         # Default to hardcoded current year.
         years = {'2024'}
-        terms = {'1', '2', 'V'}
+        terms = {'1', '2'}
 
         years_and_terms = dict_filter_by_dict(
             {year: [term for term in terms] for year in years},
